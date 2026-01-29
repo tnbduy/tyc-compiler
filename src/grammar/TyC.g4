@@ -32,7 +32,10 @@ program: (funcDecl | structDecl)* EOF ;
 DIGITS : [0-9]+ ;
 
 BLOCK_CMT : '/*' .*? '*/' -> skip ; // skip block comments
-
+UNCLOSE_BLOCK_COMMENT
+  : '/*' ( ~[*] | '*' ~[/] )* EOF
+  ;
+  
 LINE_CMT : '//' ~[\r\n]* -> skip ; // skip line comments
 
 AUTO      : 'auto' ;

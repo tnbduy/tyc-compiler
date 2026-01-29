@@ -10,7 +10,7 @@ else:
 
 def serializedATN():
     return [
-        4,1,54,412,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,55,412,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
         7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,
@@ -46,8 +46,8 @@ def serializedATN():
         397,8,40,10,40,12,40,400,9,40,1,40,1,40,1,41,1,41,1,41,5,41,407,
         8,41,10,41,12,41,410,9,41,1,41,0,0,42,0,2,4,6,8,10,12,14,16,18,20,
         22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,
-        66,68,70,72,74,76,78,80,82,0,6,4,0,10,10,13,13,15,15,20,20,1,0,28,
-        29,1,0,30,33,1,0,23,24,1,0,25,27,2,0,21,24,36,36,426,0,88,1,0,0,
+        66,68,70,72,74,76,78,80,82,0,6,4,0,11,11,14,14,16,16,21,21,1,0,29,
+        30,1,0,31,34,1,0,24,25,1,0,26,28,2,0,22,25,37,37,426,0,88,1,0,0,
         0,2,94,1,0,0,0,4,106,1,0,0,0,6,108,1,0,0,0,8,116,1,0,0,0,10,119,
         1,0,0,0,12,121,1,0,0,0,14,133,1,0,0,0,16,137,1,0,0,0,18,164,1,0,
         0,0,20,166,1,0,0,0,22,169,1,0,0,0,24,177,1,0,0,0,26,184,1,0,0,0,
@@ -60,38 +60,38 @@ def serializedATN():
         80,392,1,0,0,0,82,403,1,0,0,0,84,87,3,2,1,0,85,87,3,12,6,0,86,84,
         1,0,0,0,86,85,1,0,0,0,87,90,1,0,0,0,88,86,1,0,0,0,88,89,1,0,0,0,
         89,91,1,0,0,0,90,88,1,0,0,0,91,92,5,0,0,1,92,1,1,0,0,0,93,95,3,4,
-        2,0,94,93,1,0,0,0,94,95,1,0,0,0,95,96,1,0,0,0,96,97,5,20,0,0,97,
-        99,5,43,0,0,98,100,3,6,3,0,99,98,1,0,0,0,99,100,1,0,0,0,100,101,
-        1,0,0,0,101,102,5,44,0,0,102,103,3,80,40,0,103,3,1,0,0,0,104,107,
-        3,10,5,0,105,107,5,18,0,0,106,104,1,0,0,0,106,105,1,0,0,0,107,5,
-        1,0,0,0,108,113,3,8,4,0,109,110,5,46,0,0,110,112,3,8,4,0,111,109,
+        2,0,94,93,1,0,0,0,94,95,1,0,0,0,95,96,1,0,0,0,96,97,5,21,0,0,97,
+        99,5,44,0,0,98,100,3,6,3,0,99,98,1,0,0,0,99,100,1,0,0,0,100,101,
+        1,0,0,0,101,102,5,45,0,0,102,103,3,80,40,0,103,3,1,0,0,0,104,107,
+        3,10,5,0,105,107,5,19,0,0,106,104,1,0,0,0,106,105,1,0,0,0,107,5,
+        1,0,0,0,108,113,3,8,4,0,109,110,5,47,0,0,110,112,3,8,4,0,111,109,
         1,0,0,0,112,115,1,0,0,0,113,111,1,0,0,0,113,114,1,0,0,0,114,7,1,
-        0,0,0,115,113,1,0,0,0,116,117,3,10,5,0,117,118,5,20,0,0,118,9,1,
-        0,0,0,119,120,7,0,0,0,120,11,1,0,0,0,121,122,5,16,0,0,122,123,5,
-        20,0,0,123,127,5,41,0,0,124,126,3,14,7,0,125,124,1,0,0,0,126,129,
+        0,0,0,115,113,1,0,0,0,116,117,3,10,5,0,117,118,5,21,0,0,118,9,1,
+        0,0,0,119,120,7,0,0,0,120,11,1,0,0,0,121,122,5,17,0,0,122,123,5,
+        21,0,0,123,127,5,42,0,0,124,126,3,14,7,0,125,124,1,0,0,0,126,129,
         1,0,0,0,127,125,1,0,0,0,127,128,1,0,0,0,128,130,1,0,0,0,129,127,
-        1,0,0,0,130,131,5,42,0,0,131,132,5,45,0,0,132,13,1,0,0,0,133,134,
-        3,10,5,0,134,135,5,20,0,0,135,136,5,45,0,0,136,15,1,0,0,0,137,138,
-        3,10,5,0,138,139,5,20,0,0,139,140,5,37,0,0,140,142,5,41,0,0,141,
+        1,0,0,0,130,131,5,43,0,0,131,132,5,46,0,0,132,13,1,0,0,0,133,134,
+        3,10,5,0,134,135,5,21,0,0,135,136,5,46,0,0,136,15,1,0,0,0,137,138,
+        3,10,5,0,138,139,5,21,0,0,139,140,5,38,0,0,140,142,5,42,0,0,141,
         143,3,22,11,0,142,141,1,0,0,0,142,143,1,0,0,0,143,144,1,0,0,0,144,
-        145,5,42,0,0,145,17,1,0,0,0,146,147,3,10,5,0,147,150,5,20,0,0,148,
-        149,5,37,0,0,149,151,3,24,12,0,150,148,1,0,0,0,150,151,1,0,0,0,151,
-        152,1,0,0,0,152,153,5,45,0,0,153,165,1,0,0,0,154,155,5,4,0,0,155,
-        158,5,20,0,0,156,157,5,37,0,0,157,159,3,24,12,0,158,156,1,0,0,0,
-        158,159,1,0,0,0,159,160,1,0,0,0,160,165,5,45,0,0,161,162,3,16,8,
-        0,162,163,5,45,0,0,163,165,1,0,0,0,164,146,1,0,0,0,164,154,1,0,0,
-        0,164,161,1,0,0,0,165,19,1,0,0,0,166,167,3,24,12,0,167,168,5,45,
-        0,0,168,21,1,0,0,0,169,174,3,24,12,0,170,171,5,46,0,0,171,173,3,
+        145,5,43,0,0,145,17,1,0,0,0,146,147,3,10,5,0,147,150,5,21,0,0,148,
+        149,5,38,0,0,149,151,3,24,12,0,150,148,1,0,0,0,150,151,1,0,0,0,151,
+        152,1,0,0,0,152,153,5,46,0,0,153,165,1,0,0,0,154,155,5,5,0,0,155,
+        158,5,21,0,0,156,157,5,38,0,0,157,159,3,24,12,0,158,156,1,0,0,0,
+        158,159,1,0,0,0,159,160,1,0,0,0,160,165,5,46,0,0,161,162,3,16,8,
+        0,162,163,5,46,0,0,163,165,1,0,0,0,164,146,1,0,0,0,164,154,1,0,0,
+        0,164,161,1,0,0,0,165,19,1,0,0,0,166,167,3,24,12,0,167,168,5,46,
+        0,0,168,21,1,0,0,0,169,174,3,24,12,0,170,171,5,47,0,0,171,173,3,
         24,12,0,172,170,1,0,0,0,173,176,1,0,0,0,174,172,1,0,0,0,174,175,
         1,0,0,0,175,23,1,0,0,0,176,174,1,0,0,0,177,178,3,26,13,0,178,25,
-        1,0,0,0,179,185,3,30,15,0,180,181,3,28,14,0,181,182,5,37,0,0,182,
+        1,0,0,0,179,185,3,30,15,0,180,181,3,28,14,0,181,182,5,38,0,0,182,
         183,3,26,13,0,183,185,1,0,0,0,184,179,1,0,0,0,184,180,1,0,0,0,185,
-        27,1,0,0,0,186,191,5,20,0,0,187,188,5,38,0,0,188,190,5,20,0,0,189,
+        27,1,0,0,0,186,191,5,21,0,0,187,188,5,39,0,0,188,190,5,21,0,0,189,
         187,1,0,0,0,190,193,1,0,0,0,191,189,1,0,0,0,191,192,1,0,0,0,192,
-        29,1,0,0,0,193,191,1,0,0,0,194,199,3,32,16,0,195,196,5,34,0,0,196,
+        29,1,0,0,0,193,191,1,0,0,0,194,199,3,32,16,0,195,196,5,35,0,0,196,
         198,3,32,16,0,197,195,1,0,0,0,198,201,1,0,0,0,199,197,1,0,0,0,199,
         200,1,0,0,0,200,31,1,0,0,0,201,199,1,0,0,0,202,207,3,34,17,0,203,
-        204,5,35,0,0,204,206,3,34,17,0,205,203,1,0,0,0,206,209,1,0,0,0,207,
+        204,5,36,0,0,204,206,3,34,17,0,205,203,1,0,0,0,206,209,1,0,0,0,207,
         205,1,0,0,0,207,208,1,0,0,0,208,33,1,0,0,0,209,207,1,0,0,0,210,215,
         3,36,18,0,211,212,7,1,0,0,212,214,3,36,18,0,213,211,1,0,0,0,214,
         217,1,0,0,0,215,213,1,0,0,0,215,216,1,0,0,0,216,35,1,0,0,0,217,215,
@@ -105,54 +105,54 @@ def serializedATN():
         7,5,0,0,243,246,3,42,21,0,244,246,3,44,22,0,245,242,1,0,0,0,245,
         244,1,0,0,0,246,43,1,0,0,0,247,251,3,46,23,0,248,250,3,48,24,0,249,
         248,1,0,0,0,250,253,1,0,0,0,251,249,1,0,0,0,251,252,1,0,0,0,252,
-        45,1,0,0,0,253,251,1,0,0,0,254,263,5,48,0,0,255,263,5,49,0,0,256,
-        263,5,50,0,0,257,263,5,20,0,0,258,259,5,43,0,0,259,260,3,24,12,0,
-        260,261,5,44,0,0,261,263,1,0,0,0,262,254,1,0,0,0,262,255,1,0,0,0,
+        45,1,0,0,0,253,251,1,0,0,0,254,263,5,49,0,0,255,263,5,50,0,0,256,
+        263,5,51,0,0,257,263,5,21,0,0,258,259,5,44,0,0,259,260,3,24,12,0,
+        260,261,5,45,0,0,261,263,1,0,0,0,262,254,1,0,0,0,262,255,1,0,0,0,
         262,256,1,0,0,0,262,257,1,0,0,0,262,258,1,0,0,0,263,47,1,0,0,0,264,
-        266,5,43,0,0,265,267,3,82,41,0,266,265,1,0,0,0,266,267,1,0,0,0,267,
-        268,1,0,0,0,268,274,5,44,0,0,269,270,5,38,0,0,270,274,5,20,0,0,271,
-        274,5,21,0,0,272,274,5,22,0,0,273,264,1,0,0,0,273,269,1,0,0,0,273,
-        271,1,0,0,0,273,272,1,0,0,0,274,49,1,0,0,0,275,276,5,12,0,0,276,
-        277,5,43,0,0,277,278,3,24,12,0,278,279,5,44,0,0,279,282,3,80,40,
-        0,280,281,5,9,0,0,281,283,3,80,40,0,282,280,1,0,0,0,282,283,1,0,
-        0,0,283,51,1,0,0,0,284,285,5,19,0,0,285,286,5,43,0,0,286,287,3,24,
-        12,0,287,288,5,44,0,0,288,289,3,80,40,0,289,53,1,0,0,0,290,291,5,
-        11,0,0,291,293,5,43,0,0,292,294,3,56,28,0,293,292,1,0,0,0,293,294,
-        1,0,0,0,294,295,1,0,0,0,295,297,5,45,0,0,296,298,3,58,29,0,297,296,
-        1,0,0,0,297,298,1,0,0,0,298,299,1,0,0,0,299,301,5,45,0,0,300,302,
+        266,5,44,0,0,265,267,3,82,41,0,266,265,1,0,0,0,266,267,1,0,0,0,267,
+        268,1,0,0,0,268,274,5,45,0,0,269,270,5,39,0,0,270,274,5,21,0,0,271,
+        274,5,22,0,0,272,274,5,23,0,0,273,264,1,0,0,0,273,269,1,0,0,0,273,
+        271,1,0,0,0,273,272,1,0,0,0,274,49,1,0,0,0,275,276,5,13,0,0,276,
+        277,5,44,0,0,277,278,3,24,12,0,278,279,5,45,0,0,279,282,3,80,40,
+        0,280,281,5,10,0,0,281,283,3,80,40,0,282,280,1,0,0,0,282,283,1,0,
+        0,0,283,51,1,0,0,0,284,285,5,20,0,0,285,286,5,44,0,0,286,287,3,24,
+        12,0,287,288,5,45,0,0,288,289,3,80,40,0,289,53,1,0,0,0,290,291,5,
+        12,0,0,291,293,5,44,0,0,292,294,3,56,28,0,293,292,1,0,0,0,293,294,
+        1,0,0,0,294,295,1,0,0,0,295,297,5,46,0,0,296,298,3,58,29,0,297,296,
+        1,0,0,0,297,298,1,0,0,0,298,299,1,0,0,0,299,301,5,46,0,0,300,302,
         3,60,30,0,301,300,1,0,0,0,301,302,1,0,0,0,302,303,1,0,0,0,303,304,
-        5,44,0,0,304,305,3,80,40,0,305,55,1,0,0,0,306,309,3,62,31,0,307,
+        5,45,0,0,304,305,3,80,40,0,305,55,1,0,0,0,306,309,3,62,31,0,307,
         309,3,24,12,0,308,306,1,0,0,0,308,307,1,0,0,0,309,57,1,0,0,0,310,
         311,3,24,12,0,311,59,1,0,0,0,312,313,3,24,12,0,313,61,1,0,0,0,314,
-        315,3,10,5,0,315,318,5,20,0,0,316,317,5,37,0,0,317,319,3,24,12,0,
-        318,316,1,0,0,0,318,319,1,0,0,0,319,328,1,0,0,0,320,321,5,4,0,0,
-        321,324,5,20,0,0,322,323,5,37,0,0,323,325,3,24,12,0,324,322,1,0,
+        315,3,10,5,0,315,318,5,21,0,0,316,317,5,38,0,0,317,319,3,24,12,0,
+        318,316,1,0,0,0,318,319,1,0,0,0,319,328,1,0,0,0,320,321,5,5,0,0,
+        321,324,5,21,0,0,322,323,5,38,0,0,323,325,3,24,12,0,324,322,1,0,
         0,0,324,325,1,0,0,0,325,328,1,0,0,0,326,328,3,64,32,0,327,314,1,
         0,0,0,327,320,1,0,0,0,327,326,1,0,0,0,328,63,1,0,0,0,329,330,3,10,
-        5,0,330,331,5,20,0,0,331,332,5,37,0,0,332,334,5,41,0,0,333,335,3,
+        5,0,330,331,5,21,0,0,331,332,5,38,0,0,332,334,5,42,0,0,333,335,3,
         22,11,0,334,333,1,0,0,0,334,335,1,0,0,0,335,336,1,0,0,0,336,337,
-        5,42,0,0,337,65,1,0,0,0,338,339,5,17,0,0,339,340,5,43,0,0,340,341,
-        3,24,12,0,341,342,5,44,0,0,342,346,5,41,0,0,343,345,3,68,34,0,344,
+        5,43,0,0,337,65,1,0,0,0,338,339,5,18,0,0,339,340,5,44,0,0,340,341,
+        3,24,12,0,341,342,5,45,0,0,342,346,5,42,0,0,343,345,3,68,34,0,344,
         343,1,0,0,0,345,348,1,0,0,0,346,344,1,0,0,0,346,347,1,0,0,0,347,
-        349,1,0,0,0,348,346,1,0,0,0,349,350,5,42,0,0,350,67,1,0,0,0,351,
+        349,1,0,0,0,348,346,1,0,0,0,349,350,5,43,0,0,350,67,1,0,0,0,351,
         353,3,70,35,0,352,351,1,0,0,0,353,354,1,0,0,0,354,352,1,0,0,0,354,
         355,1,0,0,0,355,359,1,0,0,0,356,358,3,78,39,0,357,356,1,0,0,0,358,
         361,1,0,0,0,359,357,1,0,0,0,359,360,1,0,0,0,360,69,1,0,0,0,361,359,
-        1,0,0,0,362,363,5,6,0,0,363,364,3,24,12,0,364,365,5,47,0,0,365,369,
-        1,0,0,0,366,367,5,8,0,0,367,369,5,47,0,0,368,362,1,0,0,0,368,366,
-        1,0,0,0,369,71,1,0,0,0,370,371,5,7,0,0,371,372,5,45,0,0,372,73,1,
-        0,0,0,373,374,5,5,0,0,374,375,5,45,0,0,375,75,1,0,0,0,376,378,5,
-        14,0,0,377,379,3,24,12,0,378,377,1,0,0,0,378,379,1,0,0,0,379,380,
-        1,0,0,0,380,381,5,45,0,0,381,77,1,0,0,0,382,391,3,20,10,0,383,391,
+        1,0,0,0,362,363,5,7,0,0,363,364,3,24,12,0,364,365,5,48,0,0,365,369,
+        1,0,0,0,366,367,5,9,0,0,367,369,5,48,0,0,368,362,1,0,0,0,368,366,
+        1,0,0,0,369,71,1,0,0,0,370,371,5,8,0,0,371,372,5,46,0,0,372,73,1,
+        0,0,0,373,374,5,6,0,0,374,375,5,46,0,0,375,75,1,0,0,0,376,378,5,
+        15,0,0,377,379,3,24,12,0,378,377,1,0,0,0,378,379,1,0,0,0,379,380,
+        1,0,0,0,380,381,5,46,0,0,381,77,1,0,0,0,382,391,3,20,10,0,383,391,
         3,50,25,0,384,391,3,52,26,0,385,391,3,54,27,0,386,391,3,66,33,0,
         387,391,3,72,36,0,388,391,3,74,37,0,389,391,3,76,38,0,390,382,1,
         0,0,0,390,383,1,0,0,0,390,384,1,0,0,0,390,385,1,0,0,0,390,386,1,
         0,0,0,390,387,1,0,0,0,390,388,1,0,0,0,390,389,1,0,0,0,391,79,1,0,
-        0,0,392,398,5,41,0,0,393,397,3,18,9,0,394,397,3,78,39,0,395,397,
+        0,0,392,398,5,42,0,0,393,397,3,18,9,0,394,397,3,78,39,0,395,397,
         3,80,40,0,396,393,1,0,0,0,396,394,1,0,0,0,396,395,1,0,0,0,397,400,
         1,0,0,0,398,396,1,0,0,0,398,399,1,0,0,0,399,401,1,0,0,0,400,398,
-        1,0,0,0,401,402,5,42,0,0,402,81,1,0,0,0,403,408,3,24,12,0,404,405,
-        5,46,0,0,405,407,3,24,12,0,406,404,1,0,0,0,407,410,1,0,0,0,408,406,
+        1,0,0,0,401,402,5,43,0,0,402,81,1,0,0,0,403,408,3,24,12,0,404,405,
+        5,47,0,0,405,407,3,24,12,0,406,404,1,0,0,0,407,410,1,0,0,0,408,406,
         1,0,0,0,408,409,1,0,0,0,409,83,1,0,0,0,410,408,1,0,0,0,43,86,88,
         94,99,106,113,127,142,150,158,164,174,184,191,199,207,215,223,231,
         239,245,251,262,266,273,282,293,297,301,308,318,324,327,334,346,
@@ -170,23 +170,24 @@ class TyCParser ( Parser ):
     sharedContextCache = PredictionContextCache()
 
     literalNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                     "'auto'", "'break'", "'case'", "'continue'", "'default'", 
-                     "'else'", "'float'", "'for'", "'if'", "'int'", "'return'", 
-                     "'string'", "'struct'", "'switch'", "'void'", "'while'", 
-                     "<INVALID>", "'++'", "'--'", "'+'", "'-'", "'*'", "'/'", 
-                     "'%'", "'=='", "'!='", "'<='", "'>='", "'<'", "'>'", 
-                     "'||'", "'&&'", "'!'", "'='", "'.'", "'['", "']'", 
-                     "'{'", "'}'", "'('", "')'", "';'", "','", "':'" ]
+                     "<INVALID>", "'auto'", "'break'", "'case'", "'continue'", 
+                     "'default'", "'else'", "'float'", "'for'", "'if'", 
+                     "'int'", "'return'", "'string'", "'struct'", "'switch'", 
+                     "'void'", "'while'", "<INVALID>", "'++'", "'--'", "'+'", 
+                     "'-'", "'*'", "'/'", "'%'", "'=='", "'!='", "'<='", 
+                     "'>='", "'<'", "'>'", "'||'", "'&&'", "'!'", "'='", 
+                     "'.'", "'['", "']'", "'{'", "'}'", "'('", "')'", "';'", 
+                     "','", "':'" ]
 
-    symbolicNames = [ "<INVALID>", "DIGITS", "BLOCK_CMT", "LINE_CMT", "AUTO", 
-                      "BREAK", "CASE", "CONTINUE", "DEFAULT", "ELSE", "FLOAT", 
-                      "FOR", "IF", "INT", "RETURN", "STRING", "STRUCT", 
-                      "SWITCH", "VOID", "WHILE", "ID", "INC", "DEC", "PLUS", 
-                      "MINUS", "MUL", "DIV", "MOD", "EQ", "NEQ", "LE", "GE", 
-                      "LT", "GT", "OR", "AND", "NOT", "ASSIGN", "DOT", "LBRACK", 
-                      "RBRACK", "LBRACE", "RBRACE", "LPAREN", "RPAREN", 
-                      "SEMI", "COMMA", "COLON", "INT_LIT", "FLOAT_LIT", 
-                      "STRING_LIT", "ILLEGAL_ESCAPE", "UNCLOSE_STRING", 
+    symbolicNames = [ "<INVALID>", "DIGITS", "BLOCK_CMT", "UNCLOSE_BLOCK_COMMENT", 
+                      "LINE_CMT", "AUTO", "BREAK", "CASE", "CONTINUE", "DEFAULT", 
+                      "ELSE", "FLOAT", "FOR", "IF", "INT", "RETURN", "STRING", 
+                      "STRUCT", "SWITCH", "VOID", "WHILE", "ID", "INC", 
+                      "DEC", "PLUS", "MINUS", "MUL", "DIV", "MOD", "EQ", 
+                      "NEQ", "LE", "GE", "LT", "GT", "OR", "AND", "NOT", 
+                      "ASSIGN", "DOT", "LBRACK", "RBRACK", "LBRACE", "RBRACE", 
+                      "LPAREN", "RPAREN", "SEMI", "COMMA", "COLON", "INT_LIT", 
+                      "FLOAT_LIT", "STRING_LIT", "ILLEGAL_ESCAPE", "UNCLOSE_STRING", 
                       "WS", "ERROR_CHAR" ]
 
     RULE_program = 0
@@ -245,58 +246,59 @@ class TyCParser ( Parser ):
     EOF = Token.EOF
     DIGITS=1
     BLOCK_CMT=2
-    LINE_CMT=3
-    AUTO=4
-    BREAK=5
-    CASE=6
-    CONTINUE=7
-    DEFAULT=8
-    ELSE=9
-    FLOAT=10
-    FOR=11
-    IF=12
-    INT=13
-    RETURN=14
-    STRING=15
-    STRUCT=16
-    SWITCH=17
-    VOID=18
-    WHILE=19
-    ID=20
-    INC=21
-    DEC=22
-    PLUS=23
-    MINUS=24
-    MUL=25
-    DIV=26
-    MOD=27
-    EQ=28
-    NEQ=29
-    LE=30
-    GE=31
-    LT=32
-    GT=33
-    OR=34
-    AND=35
-    NOT=36
-    ASSIGN=37
-    DOT=38
-    LBRACK=39
-    RBRACK=40
-    LBRACE=41
-    RBRACE=42
-    LPAREN=43
-    RPAREN=44
-    SEMI=45
-    COMMA=46
-    COLON=47
-    INT_LIT=48
-    FLOAT_LIT=49
-    STRING_LIT=50
-    ILLEGAL_ESCAPE=51
-    UNCLOSE_STRING=52
-    WS=53
-    ERROR_CHAR=54
+    UNCLOSE_BLOCK_COMMENT=3
+    LINE_CMT=4
+    AUTO=5
+    BREAK=6
+    CASE=7
+    CONTINUE=8
+    DEFAULT=9
+    ELSE=10
+    FLOAT=11
+    FOR=12
+    IF=13
+    INT=14
+    RETURN=15
+    STRING=16
+    STRUCT=17
+    SWITCH=18
+    VOID=19
+    WHILE=20
+    ID=21
+    INC=22
+    DEC=23
+    PLUS=24
+    MINUS=25
+    MUL=26
+    DIV=27
+    MOD=28
+    EQ=29
+    NEQ=30
+    LE=31
+    GE=32
+    LT=33
+    GT=34
+    OR=35
+    AND=36
+    NOT=37
+    ASSIGN=38
+    DOT=39
+    LBRACK=40
+    RBRACK=41
+    LBRACE=42
+    RBRACE=43
+    LPAREN=44
+    RPAREN=45
+    SEMI=46
+    COMMA=47
+    COLON=48
+    INT_LIT=49
+    FLOAT_LIT=50
+    STRING_LIT=51
+    ILLEGAL_ESCAPE=52
+    UNCLOSE_STRING=53
+    WS=54
+    ERROR_CHAR=55
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -347,15 +349,15 @@ class TyCParser ( Parser ):
             self.state = 88
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1418240) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 2836480) != 0):
                 self.state = 86
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
-                if token in [10, 13, 15, 18, 20]:
+                if token in [11, 14, 16, 19, 21]:
                     self.state = 84
                     self.funcDecl()
                     pass
-                elif token in [16]:
+                elif token in [17]:
                     self.state = 85
                     self.structDecl()
                     pass
@@ -433,7 +435,7 @@ class TyCParser ( Parser ):
             self.state = 99
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1090560) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 2181120) != 0):
                 self.state = 98
                 self.paramList()
 
@@ -479,12 +481,12 @@ class TyCParser ( Parser ):
             self.state = 106
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [10, 13, 15, 20]:
+            if token in [11, 14, 16, 21]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 104
                 self.type_()
                 pass
-            elif token in [18]:
+            elif token in [19]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 105
                 self.match(TyCParser.VOID)
@@ -539,7 +541,7 @@ class TyCParser ( Parser ):
             self.state = 113
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==46:
+            while _la==47:
                 self.state = 109
                 self.match(TyCParser.COMMA)
                 self.state = 110
@@ -630,7 +632,7 @@ class TyCParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 119
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 1090560) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 2181120) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -695,7 +697,7 @@ class TyCParser ( Parser ):
             self.state = 127
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1090560) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 2181120) != 0):
                 self.state = 124
                 self.structMemberDecl()
                 self.state = 129
@@ -810,7 +812,7 @@ class TyCParser ( Parser ):
             self.state = 142
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189681979392) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379363958784) != 0):
                 self.state = 141
                 self.exprList()
 
@@ -881,7 +883,7 @@ class TyCParser ( Parser ):
                 self.state = 150
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==37:
+                if _la==38:
                     self.state = 148
                     self.match(TyCParser.ASSIGN)
                     self.state = 149
@@ -901,7 +903,7 @@ class TyCParser ( Parser ):
                 self.state = 158
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==37:
+                if _la==38:
                     self.state = 156
                     self.match(TyCParser.ASSIGN)
                     self.state = 157
@@ -1007,7 +1009,7 @@ class TyCParser ( Parser ):
             self.state = 174
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==46:
+            while _la==47:
                 self.state = 170
                 self.match(TyCParser.COMMA)
                 self.state = 171
@@ -1158,7 +1160,7 @@ class TyCParser ( Parser ):
             self.state = 191
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==38:
+            while _la==39:
                 self.state = 187
                 self.match(TyCParser.DOT)
                 self.state = 188
@@ -1214,7 +1216,7 @@ class TyCParser ( Parser ):
             self.state = 199
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==34:
+            while _la==35:
                 self.state = 195
                 self.match(TyCParser.OR)
                 self.state = 196
@@ -1270,7 +1272,7 @@ class TyCParser ( Parser ):
             self.state = 207
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==35:
+            while _la==36:
                 self.state = 203
                 self.match(TyCParser.AND)
                 self.state = 204
@@ -1332,10 +1334,10 @@ class TyCParser ( Parser ):
             self.state = 215
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==28 or _la==29:
+            while _la==29 or _la==30:
                 self.state = 211
                 _la = self._input.LA(1)
-                if not(_la==28 or _la==29):
+                if not(_la==29 or _la==30):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -1411,10 +1413,10 @@ class TyCParser ( Parser ):
             self.state = 223
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 16106127360) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 32212254720) != 0):
                 self.state = 219
                 _la = self._input.LA(1)
-                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 16106127360) != 0)):
+                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 32212254720) != 0)):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -1478,10 +1480,10 @@ class TyCParser ( Parser ):
             self.state = 231
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==23 or _la==24:
+            while _la==24 or _la==25:
                 self.state = 227
                 _la = self._input.LA(1)
-                if not(_la==23 or _la==24):
+                if not(_la==24 or _la==25):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -1551,10 +1553,10 @@ class TyCParser ( Parser ):
             self.state = 239
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 234881024) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 469762048) != 0):
                 self.state = 235
                 _la = self._input.LA(1)
-                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 234881024) != 0)):
+                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 469762048) != 0)):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -1619,11 +1621,11 @@ class TyCParser ( Parser ):
             self.state = 245
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [21, 22, 23, 24, 36]:
+            if token in [22, 23, 24, 25, 37]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 242
                 _la = self._input.LA(1)
-                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 68750934016) != 0)):
+                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 137501868032) != 0)):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -1631,7 +1633,7 @@ class TyCParser ( Parser ):
                 self.state = 243
                 self.unary()
                 pass
-            elif token in [20, 43, 48, 49, 50]:
+            elif token in [21, 44, 49, 50, 51]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 244
                 self.postfix()
@@ -1684,7 +1686,7 @@ class TyCParser ( Parser ):
             self.state = 251
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 9070977220608) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 18141954441216) != 0):
                 self.state = 248
                 self.postfixOp()
                 self.state = 253
@@ -1743,27 +1745,27 @@ class TyCParser ( Parser ):
             self.state = 262
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [48]:
+            if token in [49]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 254
                 self.match(TyCParser.INT_LIT)
                 pass
-            elif token in [49]:
+            elif token in [50]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 255
                 self.match(TyCParser.FLOAT_LIT)
                 pass
-            elif token in [50]:
+            elif token in [51]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 256
                 self.match(TyCParser.STRING_LIT)
                 pass
-            elif token in [20]:
+            elif token in [21]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 257
                 self.match(TyCParser.ID)
                 pass
-            elif token in [43]:
+            elif token in [44]:
                 self.enterOuterAlt(localctx, 5)
                 self.state = 258
                 self.match(TyCParser.LPAREN)
@@ -1828,14 +1830,14 @@ class TyCParser ( Parser ):
             self.state = 273
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [43]:
+            if token in [44]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 264
                 self.match(TyCParser.LPAREN)
                 self.state = 266
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189681979392) != 0):
+                if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379363958784) != 0):
                     self.state = 265
                     self.argList()
 
@@ -1843,19 +1845,19 @@ class TyCParser ( Parser ):
                 self.state = 268
                 self.match(TyCParser.RPAREN)
                 pass
-            elif token in [38]:
+            elif token in [39]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 269
                 self.match(TyCParser.DOT)
                 self.state = 270
                 self.match(TyCParser.ID)
                 pass
-            elif token in [21]:
+            elif token in [22]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 271
                 self.match(TyCParser.INC)
                 pass
-            elif token in [22]:
+            elif token in [23]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 272
                 self.match(TyCParser.DEC)
@@ -1928,7 +1930,7 @@ class TyCParser ( Parser ):
             self.state = 282
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==9:
+            if _la==10:
                 self.state = 280
                 self.match(TyCParser.ELSE)
                 self.state = 281
@@ -2057,7 +2059,7 @@ class TyCParser ( Parser ):
             self.state = 293
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189682021392) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379364042784) != 0):
                 self.state = 292
                 self.forInit()
 
@@ -2067,7 +2069,7 @@ class TyCParser ( Parser ):
             self.state = 297
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189681979392) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379363958784) != 0):
                 self.state = 296
                 self.forCond()
 
@@ -2077,7 +2079,7 @@ class TyCParser ( Parser ):
             self.state = 301
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189681979392) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379363958784) != 0):
                 self.state = 300
                 self.forUpdate()
 
@@ -2266,7 +2268,7 @@ class TyCParser ( Parser ):
                 self.state = 318
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==37:
+                if _la==38:
                     self.state = 316
                     self.match(TyCParser.ASSIGN)
                     self.state = 317
@@ -2284,7 +2286,7 @@ class TyCParser ( Parser ):
                 self.state = 324
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==37:
+                if _la==38:
                     self.state = 322
                     self.match(TyCParser.ASSIGN)
                     self.state = 323
@@ -2360,7 +2362,7 @@ class TyCParser ( Parser ):
             self.state = 334
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189681979392) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379363958784) != 0):
                 self.state = 333
                 self.exprList()
 
@@ -2435,7 +2437,7 @@ class TyCParser ( Parser ):
             self.state = 346
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==6 or _la==8:
+            while _la==7 or _la==9:
                 self.state = 343
                 self.switchSection()
                 self.state = 348
@@ -2504,7 +2506,7 @@ class TyCParser ( Parser ):
             self.state = 359
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189682657440) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379365314880) != 0):
                 self.state = 356
                 self.stmt()
                 self.state = 361
@@ -2554,7 +2556,7 @@ class TyCParser ( Parser ):
             self.state = 368
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [6]:
+            if token in [7]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 362
                 self.match(TyCParser.CASE)
@@ -2563,7 +2565,7 @@ class TyCParser ( Parser ):
                 self.state = 364
                 self.match(TyCParser.COLON)
                 pass
-            elif token in [8]:
+            elif token in [9]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 366
                 self.match(TyCParser.DEFAULT)
@@ -2693,7 +2695,7 @@ class TyCParser ( Parser ):
             self.state = 378
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1979189681979392) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3958379363958784) != 0):
                 self.state = 377
                 self.expr()
 
@@ -2762,42 +2764,42 @@ class TyCParser ( Parser ):
             self.state = 390
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [20, 21, 22, 23, 24, 36, 43, 48, 49, 50]:
+            if token in [21, 22, 23, 24, 25, 37, 44, 49, 50, 51]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 382
                 self.exprStmt()
                 pass
-            elif token in [12]:
+            elif token in [13]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 383
                 self.ifStmt()
                 pass
-            elif token in [19]:
+            elif token in [20]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 384
                 self.whileStmt()
                 pass
-            elif token in [11]:
+            elif token in [12]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 385
                 self.forStmt()
                 pass
-            elif token in [17]:
+            elif token in [18]:
                 self.enterOuterAlt(localctx, 5)
                 self.state = 386
                 self.switchStmt()
                 pass
-            elif token in [7]:
+            elif token in [8]:
                 self.enterOuterAlt(localctx, 6)
                 self.state = 387
                 self.continueStmt()
                 pass
-            elif token in [5]:
+            elif token in [6]:
                 self.enterOuterAlt(localctx, 7)
                 self.state = 388
                 self.breakStmt()
                 pass
-            elif token in [14]:
+            elif token in [15]:
                 self.enterOuterAlt(localctx, 8)
                 self.state = 389
                 self.returnStmt()
@@ -2866,7 +2868,7 @@ class TyCParser ( Parser ):
             self.state = 398
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1981388705954992) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 3962777411909984) != 0):
                 self.state = 396
                 self._errHandler.sync(self)
                 la_ = self._interp.adaptivePredict(self._input,40,self._ctx)
@@ -2939,7 +2941,7 @@ class TyCParser ( Parser ):
             self.state = 408
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==46:
+            while _la==47:
                 self.state = 404
                 self.match(TyCParser.COMMA)
                 self.state = 405

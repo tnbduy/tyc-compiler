@@ -42,17 +42,15 @@ def test_LX_002_block_comment_spans_multiple_lines():
     assert _token_names_no_eof(source) == ["ID"]
 
 
-# LX-003: Block comment ends at EOF (no trailing code)
-def test_LX_003_block_comment_ends_at_eof_no_trailing_code():
-    source = "/* comment */"
-    assert _token_names_no_eof(source) == []
-
+# LX-003: Block comment with special characters
+def test_LX_003_block_comment_with_special_characters():
+    source = ("/* !@#$%^&*()_+-=[]{}|;:'\"<>/?`~ \\b \\t \\f \\\\ /* // still comment \n*/id")
+    assert _token_names_no_eof(source) == ["ID"]
 
 # LX-004: Unterminated block comment (reaches EOF)
 def test_LX_004_unterminated_block_comment_reaches_eof():
     source = "/* Unclosed block comment"
-    with pytest.raises(Exception):
-        Tokenizer(source).get_tokens_as_string()
+    assert "UNCLOSE_BLOCK_COMMENT" in _token_names_no_eof(source)
 
 
 # LX-005: Valid line comment (ends at newline)
@@ -66,7 +64,25 @@ def test_LX_006_block_markers_have_no_meaning_inside_line_comment():
     source = "// this /* is not a block */\nid"
     assert _token_names_no_eof(source) == ["ID"]
 
-# LX-007: Comments are not nested (block comment stops at first */)
+# LX-007: Comments are not nested
 def test_LX_007_comments_not_nested_block_comment_stops_at_first_end():
-    source = "/* outer /* inner */ id"
+    source = "/* outer */ inner */ id"
+    assert _token_names_no_eof(source) == ["ID", "MUL", "DIV", "ID"]
+
+
+# LX-008: Line comment at EOF
+def test_LX_008_line_comment_at_eof():
+    source = "// Line comment encounter EOF <EOF>"
+    assert _token_names_no_eof(source) == []
+    
+
+# LX-009: Nested line comments
+def test_LX_009_nested_line_comments():
+    source = "// Outer comment // Inner comment\r\nid"
+    assert _token_names_no_eof(source) == ["ID"]    
+    
+
+# LX-010: Line comment with special characters
+def test_LX_010_line_comment_with_special_characters():
+    source = "// !@#$%^&*()_+-=[]{}|;:'\"<>/?`~ \\b \\t \\f \\\\ /* not a block */ // still comment \nid"
     assert _token_names_no_eof(source) == ["ID"]
