@@ -33,6 +33,183 @@ class ASTNode(ABC):
 # ============================================================================
 
 
+"""
+==============================================================================
+
+ASTNode:
+    - Program -> root
+    - Decl
+        + StructDecl
+        + MemberDecl
+        + FuncDecl
+    - Param
+    - Type
+        + IntType
+        + FloatType
+        + StringType
+        + VoidType
+        + StructType
+    - Stmt
+        + BlockStmt
+        + VarDecl
+        + IfStmt
+        + WhileStmt
+        + ForStmt
+        + SwitchStmt
+        + CaseStmt
+        + DefaultStmt
+        + BreakStmt
+        + ContinueStmt
+        + ReturnStmt
+        + ExprStmt
+    - Expr
+        + BinaryOp
+        + PrefixOp
+        + PostfixOp
+        + AssignExpr
+        + MemberAccess
+        + FuncCall
+        + Identifier
+        + StructLiteral
+    - Literal
+        + IntLiteral
+        + FloatLiteral
+        + StringLiteral
+
+
+
+
+RootNode {
+    StructDecl[] // 0..n
+    FuncDecl[] // 0..n
+}
+
+namespace Decl {
+    StructDecl {
+        MemberDecl[] // 0..n
+    }
+
+    FuncDecl {
+        Stmt[] // 0..n
+    }
+}
+
+==============================Child Info==========================
+namespace Stmt {
+
+    BlockStmt {
+        Stmt[] // 0..n
+    }
+
+    VarDecl {
+        Type? // nullable
+        # str // id name
+        Expr? // init value
+    }
+
+    IfStmt {
+        Expr // condition
+        Stmt // then statement
+        Stmt? // else statement, nullable
+    }
+
+    WhileStmt {
+        Expr // condition
+        Stmt // body
+    }
+
+    ForStmt {
+        (VarDecl | ExprStmt)? // for_init, nullable
+        Expr? // for_condition, nullable
+        Expr? // for_update, nullable
+        Stmt // for_body
+    }
+
+    SwitchStmt {
+        CaseStmt[]
+        DefaultStmt? // nullable
+    }
+
+    CaseStmt {
+        Expr
+        Stmt[]
+    }
+
+    DefaultStmt {
+        Stmt[]
+    }
+
+    BreakStmt {}
+
+    ContinueStmt {}
+
+    ReturnStmt {
+        Expr?
+    }
+
+    ExprStmt {
+        Expr
+    }
+}
+
+namespace Expr {
+    BinaryOp {
+        Expr
+        # str
+        Expr
+    }
+
+    PrefixOp {
+        # str
+        Expr
+    }
+
+    PostfixOp {
+        # str
+        Expr
+    }
+
+    AssignExpr {
+        Expr // Identifier or Struct Acces
+        Expr
+    }
+
+    MemberAccess {
+        Expr // Struct object
+        # str // identifier name
+    }
+
+    FuncCall {
+        # str // function name
+        Expr[]
+    }    
+
+    Identifier {
+        # str // id name
+    }
+
+    StructLiteral {
+        Expr[]
+    }
+
+    IntLiteral {
+        # int
+    }
+
+    FloatLiteral {
+        # float
+    }
+
+    StringLiteral {
+        # str
+    }
+}
+
+==============================================================================
+
+==============================================================================
+"""
+
 class Program(ASTNode):
     """Root node representing the entire TyC program."""
 
@@ -90,7 +267,7 @@ class FuncDecl(Decl):
     def __init__(
         self,
         return_type: Optional["Type"],
-        name: str,
+        name: str, # function id
         params: List["Param"],
         body: "BlockStmt",
     ):
@@ -482,7 +659,7 @@ class AssignExpr(Expr):
 
     def __init__(self, lhs: "Expr", rhs: "Expr"):
         super().__init__()
-        self.lhs = lhs  # Identifier or MemberAccess
+        self.lhs = lhs  # Identifier or MemberAccess x | v.x
         self.rhs = rhs
 
     def accept(self, visitor, o=None):
@@ -539,7 +716,8 @@ class Identifier(Expr):
     def __str__(self):
         return f"Identifier({self.name})"
 
-
+# Excuse me wtf
+# It'd be better if there will be a generic class
 class StructLiteral(Expr):
     """Struct literal expression (initialization with {})."""
 
