@@ -157,8 +157,8 @@ expression5 : expression5 (ADD_OP | SUB_OP) expression6 | expression6;
 expression6 : expression6 (MUL_OP | DIV_OP | MOD_OP) expression7 | expression7;
 expression7 : (LOGIC_NOT_OP | ADD_OP | SUB_OP) expression7 | expression8;
 expression8 : (INC_OP | DEC_OP) expression8 | expression9;
-expression9 : expression9 (INC_OP | DEC_OP) | expression10;
-expression10 : struct_mem_id | expression11 | call_function;
+expression9 : expression9 (INC_OP | DEC_OP) | expression10 | call_function;
+expression10 : struct_mem_id | expression11;
 expression11 : INT_LIT | FLOAT_LIT | STR_LIT | ID | LP_SEP expression RP_SEP | LB_SEP list_expression? RB_SEP;
 
 pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) expression10 | expression10 (INC_OP | DEC_OP);
