@@ -161,7 +161,7 @@ expression9 : expression9 (INC_OP | DEC_OP) | expression10 | call_function;
 expression10 : struct_mem_id | expression11;
 expression11 : INT_LIT | FLOAT_LIT | STR_LIT | ID | LP_SEP expression RP_SEP | LB_SEP list_expression? RB_SEP;
 
-pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) expression10 | expression10 (INC_OP | DEC_OP);
+pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) (call_function | expression10) | (call_function | expression10) (INC_OP | DEC_OP);
 
 call_function: call_function ID LP_SEP list_expression? RP_SEP | ID LP_SEP list_expression? RP_SEP;
 struct_mem_id : struct_mem_id MEM_ACCESS_OP ID | (call_function | expression11) MEM_ACCESS_OP ID;

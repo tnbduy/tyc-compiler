@@ -141,7 +141,7 @@ void main () {
     ++a = 1;
 }
 """
-    expect = "success"
+    expect = "Error on line 3 col 8: ="
     assert Parser(input).parse() == expect
 
 def test_015():
@@ -215,7 +215,7 @@ void main () {
     foo() = 1;
 }
 """
-    expect = "success"
+    expect = "Error on line 3 col 10: ="
     assert Parser(input).parse() == expect
 
 def test_022():

@@ -131,7 +131,7 @@ class ASTGeneration(TyCVisitor):
         return [ctx.expression().accept(self)] + ctx.list_expression().accept(self)
 
 
-    # expression : assign_expression | expression1;
+    # expression : assign_exp | expression1;
     def visitExpression(self, ctx:TyCParser.ExpressionContext):
         return ctx.getChild(0).accept(self)
 
@@ -252,12 +252,12 @@ class ASTGeneration(TyCVisitor):
                 return StructLiteral(ctx.list_expression().accept(self) if ctx.list_expression() else [])
 
 
-    # pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) expression10 | expression10 (INC_OP | DEC_OP);
+    # pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) (call_function | expression10) | (call_function | expression10) (INC_OP | DEC_OP);
     def visitPre_post_update(self, ctx:TyCParser.Pre_post_updateContext):
         firstChild = ctx.getChild(0)
         secondChild = ctx.getChild(1)
 
-        if isinstance(firstChild,(TyCParser.Pre_post_updateContext,TyCParser.Expression10Context)): #if this is postfix update
+        if isinstance(firstChild,(TyCParser.Pre_post_updateContext,TyCParser.Expression10Context,TyCParser.Call_functionContext)): #if this is postfix update
             return PostfixOp(INC_OP if ctx.INC_OP() else DEC_OP, firstChild.accept(self))
         else: # prefix update
             return PrefixOp(INC_OP if ctx.INC_OP() else DEC_OP, secondChild.accept(self))
