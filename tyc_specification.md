@@ -298,6 +298,7 @@ Where:
 - Struct members can be struct types: However, struct members can be of other struct types (using previously declared struct types)
 - Struct names must be unique in the program
 - Struct members can be of primitive types (`int`, `float`, `string`) or other struct types (that are declared before use)
+- The struct currently being defined does not count as already declared for typing its own members (so a member type cannot be that same incomplete struct)
 
 For example:
 ```tyc
@@ -971,6 +972,7 @@ The type of an expression is inferred from its components:
   - If there are no return statements or only `return;` statements, the return type is inferred as `void`
   - All subsequent return statements must return a value of the inferred return type - if a return statement returns a value of a different type, it is a compile-time error (TypeMismatchInStatement)
 - All `return` statements in a function must return a value of the inferred/declared return type (or no value for `void`)
+- Inferred return type is a property of the **whole** function body under the bullets above; static checking may determine it before or while checking individual statements (e.g. multiple internal passes are allowed).
 
 ### Strict Operator Typing
 
@@ -1063,11 +1065,11 @@ There are two broad levels: **global** (functions, structs) and **local** (param
 
 ### Global Scope
 
-All function names and struct names have global scope. A function name or struct name is visible everywhere in the program. Functions can be invoked from any function, and struct types can be used throughout the program.
+All function names and struct names have global scope: each denotes one function or one struct type for the whole program, and where the static rules permit a use, resolution refers to that global binding. **A use of a function or of a struct as a type must still follow the declared-before-use ordering** in the source text (see the static semantic reference); global scope does not mean forward reference is allowed.
 
 ### Local Scope
 
-Parameters and variables are **local**. Each declaration introduces a binding that is **visible from the declaration through the end of the innermost scope that contains that declaration**. Resolving an identifier searches **from the innermost scope outward** until a binding is found.
+Parameters and variables are **local**. Each declaration introduces a binding that is **visible from the declaration through the end of the innermost scope that contains that declaration**. Resolving an identifier searches **from the innermost scope outward** until a binding is found. **The optional initializer of a variable declaration is not in the scope of that variable**; the variable's name is in scope only after the entire declaration.
 
 **Blocks:** A block `{ ... }` introduces a **new inner scope** for the declarations that appear in its declaration-and-statement list. An inner scope may **shadow** a local variable from an outer scope if the same identifier is declared again. (Restrictions on reusing **parameter** names are stated in the static semantic reference.)
 

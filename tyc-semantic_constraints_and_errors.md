@@ -118,6 +118,7 @@ void test() {
 **Identifier Resolution Rules:**
 - Identifiers are resolved by searching from innermost scope outward
 - Variables must be declared before use within the same or enclosing scope
+- A variable's initializer is checked without that variable in scope (see **`tyc_specification.md` § Scope Rules**)
 - Parameters are visible throughout the entire function body
 - Global variables are not supported in TyC (only function/struct declarations are global)
 
@@ -221,6 +222,7 @@ void example() {
 - Struct types can be used throughout the program after declaration
 - Struct names must be unique among struct types (may match a function name—separate namespace)
 - Struct members cannot use `auto` - only explicit types are allowed
+- A member's type cannot be the struct currently being declared (see **`tyc_specification.md` § Struct Type**)
 
 **Examples:**
 ```tyc
@@ -830,7 +832,7 @@ void nestedLoops() {
 
 ### Error Detection Priority
 
-**Single-pass, first failure wins (program-wide).** The checker performs one semantic **visit** over the program (typical depth-first walk). The **only** error reported is the **first** semantic failure encountered along that visit. **Tier numbers do not promote a later failure ahead of an earlier one:** the visit is not extended to discover all failures and then choose by smallest tier. The tiers below classify error **kinds** and define **tie-breaking within the same tier**; they do not impose a global priority queue over the whole program.
+**Single-pass, first failure wins (program-wide).** The checker performs one semantic **visit** over the program (typical depth-first walk). The **only** error reported is the **first** semantic failure encountered along that visit. The implementation may still use extra internal passes or deferred checks (e.g. for inferred return types) as long as **reporting** stays “first failure along the chosen visit order.” **Tier numbers do not promote a later failure ahead of an earlier one:** the visit is not extended to discover all failures and then choose by smallest tier. The tiers below classify error **kinds** and define **tie-breaking within the same tier**; they do not impose a global priority queue over the whole program.
 
 **Error tiers** (for documentation and same-tier ties):
 
@@ -847,7 +849,7 @@ void nestedLoops() {
 
 Lexical scope (blocks, shadowing, and `for` init vs. loop body) is defined normatively in **`tyc_specification.md` § Scope Rules**. The checker should follow that model; the Redeclared / UndeclaredIdentifier rules in this document are consequences of it.
 
-- **Global scope:** Functions and structs (names are unique within each kind; struct names and function names may coincide—see Redeclared rules above)
+- **Global scope:** Functions and structs (names are unique within each kind; struct names and function names may coincide—see Redeclared rules above). Global binding does not override **declared-before-use** for calls and struct-type uses (sections 3–4); align with **`tyc_specification.md` § Scope Rules, Global Scope**.
 - **Function scope:** Parameters (visible throughout function body; see Redeclared rules—locals may not reuse parameter names)
 - **Local scope (block):** Variables declared in blocks `{}`
 - **Nested scopes:** Inner scopes can shadow outer local variables (not parameters of the enclosing function)
@@ -860,7 +862,7 @@ TyC uses complete type inference with the following rules:
 2. **`auto`:** From initializer if present; else from first constraining use
 3. **Failure:** Ambiguous or unused `auto` → `TypeCannotBeInferred(<ctx>)` (see section 5)
 4. **Expressions:** Operator/operand rules apply once types are known
-5. **Function returns:** Explicit or inferred from returns
+5. **Function returns:** Explicit or inferred from the function's return statements as a whole (specification Rule 5), not necessarily from a single strict top-to-bottom pass
 
 ### Type System Rules
 
