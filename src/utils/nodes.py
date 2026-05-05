@@ -27,6 +27,14 @@ class ASTNode(ABC):
         """Default string representation."""
         return f"{self.__class__.__name__}()"
 
+    def __repr__(self):
+        """Use same as __str__ so nodes inside list/tuple display correctly.
+
+        Python's str(list) uses repr() on elements; without __repr__, nodes
+        fall back to default object repr (<Class at 0x...>).
+        """
+        return self.__str__()
+
 
 # ============================================================================
 # Program and Top-level Declarations
@@ -50,6 +58,7 @@ class Program(ASTNode):
 
 class Decl(ASTNode):
     """Base class for declarations (struct or function)."""
+
     pass
 
 
@@ -106,7 +115,18 @@ class FuncDecl(Decl):
     def __str__(self):
         return_type_str = str(self.return_type) if self.return_type else "auto"
         params_str = ", ".join(str(p) for p in self.params) if self.params else ""
-        return f"FuncDecl({return_type_str}, {self.name}, [{params_str}], {self.body})"
+        if isinstance(self.body, BlockStmt):
+            stmts = self.body.statements
+        elif isinstance(self.body, list):
+            stmts = self.body
+        else:
+            body_str = str(self.body)
+            return (
+                f"FuncDecl({return_type_str}, {self.name}, [{params_str}], {body_str})"
+            )
+        stmts_str = ", ".join(str(s) for s in stmts) if stmts else ""
+        body_str = f"[{stmts_str}]"
+        return f"FuncDecl({return_type_str}, {self.name}, [{params_str}], {body_str})"
 
 
 class Param(ASTNode):
@@ -131,6 +151,7 @@ class Param(ASTNode):
 
 class Type(ASTNode):
     """Base class for type annotations."""
+
     pass
 
 
@@ -207,6 +228,7 @@ class StructType(Type):
 
 class Stmt(ASTNode):
     """Base class for all statement nodes."""
+
     pass
 
 
@@ -221,7 +243,9 @@ class BlockStmt(Stmt):
         return visitor.visit_block_stmt(self, o)
 
     def __str__(self):
-        stmts_str = ", ".join(str(s) for s in self.statements) if self.statements else ""
+        stmts_str = (
+            ", ".join(str(s) for s in self.statements) if self.statements else ""
+        )
         return f"BlockStmt([{stmts_str}])"
 
 
@@ -345,7 +369,9 @@ class CaseStmt(ASTNode):
         return visitor.visit_case_stmt(self, o)
 
     def __str__(self):
-        stmts_str = ", ".join(str(s) for s in self.statements) if self.statements else ""
+        stmts_str = (
+            ", ".join(str(s) for s in self.statements) if self.statements else ""
+        )
         return f"CaseStmt(case {self.expr}: [{stmts_str}])"
 
 
@@ -360,7 +386,9 @@ class DefaultStmt(ASTNode):
         return visitor.visit_default_stmt(self, o)
 
     def __str__(self):
-        stmts_str = ", ".join(str(s) for s in self.statements) if self.statements else ""
+        stmts_str = (
+            ", ".join(str(s) for s in self.statements) if self.statements else ""
+        )
         return f"DefaultStmt(default: [{stmts_str}])"
 
 
@@ -426,6 +454,7 @@ class ExprStmt(Stmt):
 
 class Expr(ASTNode):
     """Base class for all expression nodes."""
+
     pass
 
 

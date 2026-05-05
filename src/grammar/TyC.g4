@@ -138,17 +138,10 @@ UNCLOSE_STRING: '"' STR_VALID_CHAR* '\\'? ('\n' | '\r\n' | EOF) {
 
 // =====================================================================================//
 
-// ================================= Type System =============================//
-
-// TODO : BTL2
-
-
-// ===========================================================================//
-
 // ================================= Expression ==============================//
 list_expression : expression CM_SEP list_expression | expression;
 
-expression : assign_expression | expression1;
+expression : (ID | struct_mem_id)  ASSIGN_OP expression | expression1;
 expression1 : expression1 LOGIC_OR_OP expression2 | expression2;
 expression2 : expression2 LOGIC_AND_OP expression3 | expression3;
 expression3 : expression3 (EQ_OP | NEQ_OP) expression4 | expression4;
@@ -161,7 +154,7 @@ expression9 : expression9 (INC_OP | DEC_OP) | expression10 | call_function;
 expression10 : struct_mem_id | expression11;
 expression11 : INT_LIT | FLOAT_LIT | STR_LIT | ID | LP_SEP expression RP_SEP | LB_SEP list_expression? RB_SEP;
 
-pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) (call_function | expression10) | (call_function | expression10) (INC_OP | DEC_OP);
+pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) expression10 | expression10 (INC_OP | DEC_OP);
 
 call_function: call_function ID LP_SEP list_expression? RP_SEP | ID LP_SEP list_expression? RP_SEP;
 struct_mem_id : struct_mem_id MEM_ACCESS_OP ID | (call_function | expression11) MEM_ACCESS_OP ID;

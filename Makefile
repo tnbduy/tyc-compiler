@@ -57,7 +57,7 @@ else
     RESET=\033[0m
 endif
 
-.PHONY: help check setup build clean clean-cache clean-reports test-lexer test-parser test-ast clean-venv
+.PHONY: help check setup build clean clean-cache clean-reports test-lexer test-parser test-ast test-checker clean-venv
 
 # Default target - show help
 help:
@@ -71,7 +71,8 @@ help:
 	@echo "$(GREEN)Testing:$(RESET)"
 	@echo "  $(YELLOW)make test-lexer$(RESET)  - Run lexer tests and generate reports"
 	@echo "  $(YELLOW)make test-parser$(RESET) - Run parser tests and generate reports"
-	@echo "  $(YELLOW)make test-ast$(RESET)    - Run AST generation tests and generate reports"
+	@echo "  $(YELLOW)make test-ast$(RESET)      - Run AST generation tests and generate reports"
+	@echo "  $(YELLOW)make test-checker$(RESET)  - Run semantic checker tests (Assignment 3)"
 	@echo ""
 	@echo "$(GREEN)Cleaning:$(RESET)"
 	@echo "  $(YELLOW)make clean$(RESET)         - Clean build and external directories"
@@ -236,6 +237,14 @@ test-ast: build
 	$(call MKDIR_CMD,$(REPORT_DIR))
 	@PYTHONPATH=$(CURDIR) $(VENV_PYTHON) -m pytest tests/test_ast_gen.py --html=$(REPORT_DIR)/ast/index.html --timeout=5 --self-contained-html -v || true
 	@echo "$(GREEN)AST generation tests completed. Reports generated at $(REPORT_DIR)/ast/index.html$(RESET)"
+	@$(MAKE) clean-cache
+
+test-checker: build
+	@echo "$(YELLOW)Running semantic checker tests...$(RESET)"
+	$(call RM_CMD,$(REPORT_DIR)/checker)
+	$(call MKDIR_CMD,$(REPORT_DIR))
+	@PYTHONPATH=$(CURDIR) $(VENV_PYTHON) -m pytest tests/test_checker.py --html=$(REPORT_DIR)/checker/index.html --timeout=10 --self-contained-html -v || true
+	@echo "$(GREEN)Checker tests completed. Reports generated at $(REPORT_DIR)/checker/index.html$(RESET)"
 	@$(MAKE) clean-cache
 
 # Function to find Python version

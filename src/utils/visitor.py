@@ -70,10 +70,6 @@ class ASTVisitor(ABC):
         pass
 
     @abstractmethod
-    def visit_assign_stmt(self, node: "AssignStmt", o: Any = None):
-        pass
-
-    @abstractmethod
     def visit_if_stmt(self, node: "IfStmt", o: Any = None):
         pass
 
@@ -209,9 +205,6 @@ class BaseVisitor(ASTVisitor):
             self.visit(node.var_type, o)
         if node.init_value:
             self.visit(node.init_value, o)
-
-    def visit_assign_stmt(self, node: "AssignStmt", o: Any = None):
-        self.visit(node.assign_expr, o)
 
     def visit_if_stmt(self, node: "IfStmt", o: Any = None):
         self.visit(node.condition, o)

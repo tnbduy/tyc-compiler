@@ -1,2743 +1,1242 @@
-"""
-AST Generation test cases for TyC compiler.
-TODO: Implement 100 test cases for AST generation
-"""
-
-import pytest
-from tests.utils import ASTGenerator
+from .utils import ASTGenerator
 from src.utils.nodes import *
 
-"""
-def test_ast_gen_placeholder():
-    source = "void main() {}"
-    # TODO: Add actual test assertions
-    # Example:
-    expected = "Program([FuncDecl(VoidType(), main, [], BlockStmt([]))])"
-    assert str(ASTGenerator(source).generate()) == expected
-    assert True
-"""
-
 def test_001():
-    input = "void main() {}"
-    expect = "Program([FuncDecl(VoidType(), main, [], BlockStmt([]))])"
-    assert str(ASTGenerator(input).generate()) == expect
+    source = """
+void main() {
+    printString("Hello, World!");
+}
+"""
+    expected = Program([
+        FuncDecl(
+            VoidType(),
+            "main",
+            [],
+            BlockStmt([
+                ExprStmt(
+                    FuncCall("printString", [StringLiteral("Hello, World!")])
+                )
+            ])
+        )
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_002():
-    input = """
+    source = """
+int add(int x, int y) {
+    return x + y;
+}
+
+int multiply(int x, int y) {
+    return x * y;
+}
+
 void main() {
-    3 + 3;
+    auto a = readInt();
+    auto b = readInt();
+    
+    auto sum = add(a, b);
+    auto product = multiply(a, b);
+    
+    printInt(sum);
+    printInt(product);
 }
 """
+    expected = Program([
+        FuncDecl(
+            IntType(),
+            "add",
+            [Param(IntType(), "x"), Param(IntType(), "y")],
+            BlockStmt([
+                ReturnStmt(
+                    BinaryOp(Identifier("x"), "+", Identifier("y"))
+                )
+            ])
+        ),
+        FuncDecl(
+            IntType(),
+            "multiply",
+            [Param(IntType(), "x"), Param(IntType(), "y")],
+            BlockStmt([
+                ReturnStmt(
+                    BinaryOp(Identifier("x"), "*", Identifier("y"))
+                )
+            ])
+        ),
+        FuncDecl(
+            VoidType(),
+            "main",
+            [],
+            BlockStmt([
+                VarDecl(None, "a", FuncCall("readInt", [])),
+                VarDecl(None, "b", FuncCall("readInt", [])),
+                VarDecl(None, "sum", FuncCall("add", [Identifier("a"), Identifier("b")])),
+                VarDecl(None, "product", FuncCall("multiply", [Identifier("a"), Identifier("b")])),
+                ExprStmt(FuncCall("printInt", [Identifier("sum")])),
+                ExprStmt(FuncCall("printInt", [Identifier("product")]))
+            ])
+        )
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(BinaryOp(IntLiteral(3), +, IntLiteral(3)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
 
 def test_003():
-    input = """
-    struct testStruct {};
+    source = """
+void main() {
+    auto n = readInt();
+    auto i = 0;
+    
+    while (i < n) {
+        printInt(i);
+        ++i;
+    }
+    
+    for (auto j = 0; j < n; ++j) {
+        if (j % 2 == 0) {
+            printInt(j);
+        }
+    }
+}
 """
-    expect = "Program([" \
-        "StructDecl(" \
-            "testStruct, " \
-            "[]" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(
+            VoidType(),
+            "main",
+            [],
+            BlockStmt([
+                VarDecl(None, "n", FuncCall("readInt", [])),
+                VarDecl(None, "i", IntLiteral(0)),
+                WhileStmt(
+                    BinaryOp(Identifier("i"), "<", Identifier("n")),
+                    BlockStmt([
+                        ExprStmt(FuncCall("printInt", [Identifier("i")])),
+                        ExprStmt(PrefixOp("++", Identifier("i")))
+                    ])
+                ),
+                ForStmt(
+                    VarDecl(None, "j", IntLiteral(0)),
+                    BinaryOp(Identifier("j"), "<", Identifier("n")),
+                    PrefixOp("++", Identifier("j")),
+                    BlockStmt([
+                        IfStmt(
+                            BinaryOp(
+                                BinaryOp(Identifier("j"), "%", IntLiteral(2)),
+                                "==",
+                                IntLiteral(0)
+                            ),
+                            BlockStmt([
+                                ExprStmt(FuncCall("printInt", [Identifier("j")]))
+                            ]),
+                            None
+                        )
+                    ])
+                )
+            ])
+        )
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_004():
-    input = """
-    struct testStruct {
-        int x;
-    };
-"""
-    expect = "Program([" \
-        "StructDecl(" \
-            "testStruct, " \
-            "[MemberDecl(IntType(), x)]" \
-        ")" \
-    "])"
+    source = """
+int factorial(int n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
 
-    assert str(ASTGenerator(input).generate()) == expect
+void main() {
+    auto num = readInt();
+    auto result = factorial(num);
+    printInt(result);
+}
+"""
+    expected = Program([
+        FuncDecl(
+            IntType(),
+            "factorial",
+            [Param(IntType(), "n")],
+            BlockStmt([
+                IfStmt(
+                    BinaryOp(Identifier("n"), "<=", IntLiteral(1)),
+                    BlockStmt([
+                        ReturnStmt(IntLiteral(1))
+                    ]),
+                    BlockStmt([
+                        ReturnStmt(
+                            BinaryOp(
+                                Identifier("n"),
+                                "*",
+                                FuncCall(
+                                    "factorial",
+                                    [BinaryOp(Identifier("n"), "-", IntLiteral(1))]
+                                )
+                            )
+                        )
+                    ])
+                )
+            ])
+        ),
+        FuncDecl(
+            VoidType(),
+            "main",
+            [],
+            BlockStmt([
+                VarDecl(None, "num", FuncCall("readInt", [])),
+                VarDecl(None, "result", FuncCall("factorial", [Identifier("num")])),
+                ExprStmt(FuncCall("printInt", [Identifier("result")]))
+            ])
+        )
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_005():
-    input = """
-    struct Vector2 {
-        float x;
-        float y;
-    };
+    source = """
+void main() {
+    // With auto and initialization
+    auto x = readInt();
+    auto y = readFloat();
+    auto name = readString();
+    
+    // With auto without initialization
+    auto sum;
+    sum = x + y;              // sum: float (inferred from first usage - assignment)
+    
+    // With explicit type and initialization
+    int count = 0;
+    float total = 0.0;
+    string greeting = "Hello, ";
+    
+    // With explicit type without initialization
+    int i;
+    float f;
+    i = readInt();            // assignment to int
+    f = readFloat();          // assignment to float
+    
+    printFloat(sum);
+    printString(greeting);
+    printString(name);
+}
 """
-    expect = "Program([" \
-        "StructDecl(" \
-            "Vector2, " \
-            "[MemberDecl(FloatType(), x), MemberDecl(FloatType(), y)]" \
-        ")" \
-    "])"
+    expected = Program([
+        FuncDecl(
+            VoidType(),
+            "main",
+            [],
+            BlockStmt([
+                VarDecl(None, "x", FuncCall("readInt", [])),
+                VarDecl(None, "y", FuncCall("readFloat", [])),
+                VarDecl(None, "name", FuncCall("readString", [])),
 
-    assert str(ASTGenerator(input).generate()) == expect
+                VarDecl(None, "sum", None),
+                ExprStmt(
+                    AssignExpr(
+                        Identifier("sum"),
+                        BinaryOp(Identifier("x"), "+", Identifier("y"))
+                    )
+                ),
 
+                VarDecl(IntType(), "count", IntLiteral(0)),
+                VarDecl(FloatType(), "total", FloatLiteral(0.0)),
+                VarDecl(StringType(), "greeting", StringLiteral("Hello, ")),
+
+                VarDecl(IntType(), "i", None),
+                VarDecl(FloatType(), "f", None),
+                ExprStmt(
+                    AssignExpr(Identifier("i"), FuncCall("readInt", []))
+                ),
+                ExprStmt(
+                    AssignExpr(Identifier("f"), FuncCall("readFloat", []))
+                ),
+
+                ExprStmt(FuncCall("printFloat", [Identifier("sum")])),
+                ExprStmt(FuncCall("printString", [Identifier("greeting")])),
+                ExprStmt(FuncCall("printString", [Identifier("name")]))
+            ])
+        )
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
+
+
+    
 def test_006():
-    input = """
-    int fibo(int n) {
-        if (n <= 1) return n;
-        return fibo(n - 1) + fibo(n - 2);
-    }
+    source = """
+struct A {};
+struct B {int a; ID b;};
+struct C {float a; string b;};
+struct D {Z a;};
 """
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "IntType(), " \
-            "fibo, " \
-            "[Param(IntType(), n)], " \
-            "BlockStmt([" \
-                "IfStmt(if BinaryOp(Identifier(n), <=, IntLiteral(1)) then ReturnStmt(return Identifier(n))), " \
-                "ReturnStmt(return BinaryOp(" \
-                    "FuncCall(fibo, [BinaryOp(Identifier(n), -, IntLiteral(1))]), " \
-                    "+, " \
-                    "FuncCall(fibo, [BinaryOp(Identifier(n), -, IntLiteral(2))])" \
-                "))" \
-            "])" \
-        ")" \
-    "])"
-
-    print(str(ASTGenerator(input).generate()))
-
-    print(expect)
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        StructDecl('A', []),
+        StructDecl('B', [MemberDecl(IntType(), 'a'), MemberDecl(StructType('ID'), 'b')]),
+        StructDecl('C', [MemberDecl(FloatType(), 'a'), MemberDecl(StringType(), 'b')]),
+        StructDecl('D', [ MemberDecl(StructType('Z'), 'a')]),
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_007():
-    input = """
-void main() {
-    int x = 3 + 3 * 2;
-}
+    source = """
+void main() {}
+main(int a) {}
+int main(int a, ID b) {}
+float main(float b) {}
+string main(string b, int a, Z b) {}
 """
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "VarDecl(" \
-                    "IntType(), " \
-                    "x = " \
-                    "BinaryOp(" \
-                        "IntLiteral(3), " \
-                        "+, " \
-                        "BinaryOp(" \
-                            "IntLiteral(3), " \
-                            "*, " \
-                            "IntLiteral(2)" \
-                        ")" \
-                    ")" \
-                ")" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([])),
+        FuncDecl(None, "main",
+            [Param(IntType(), "a")],
+            BlockStmt([])
+        ),
+        FuncDecl(IntType(), "main",
+            [Param(IntType(), "a"), Param(StructType("ID"), "b")],
+            BlockStmt([])
+        ),
+        FuncDecl(FloatType(), "main",
+            [Param(FloatType(), "b")],
+            BlockStmt([])
+        ),
+        FuncDecl(StringType(), "main",
+            [
+                Param(StringType(), "b"),
+                Param(IntType(), "a"),
+                Param(StructType("Z"), "b")
+            ],
+            BlockStmt([])
+        ),
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_008():
-    input = """
+    source = """
 void main() {
-    int x;
+    1;
+    1.3;
+    "s";
+    {};
+    {1, {2}};
 }
 """
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([VarDecl(IntType(), x)])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(IntLiteral(1)),
+            ExprStmt(FloatLiteral(1.3)),
+            ExprStmt(StringLiteral("s")),
+            ExprStmt(StructLiteral([])),
+            ExprStmt(StructLiteral([
+                IntLiteral(1),
+                StructLiteral([
+                    IntLiteral(2)
+                ])
+            ]))
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_009():
-    input = """
-float foo() {
-    return 1;
+    source = """
+void main() {
+    a = b = 1.0;
 }
 """
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "FloatType(), " \
-            "foo, " \
-            "[], " \
-            "BlockStmt([ReturnStmt(return IntLiteral(1))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                AssignExpr(
+                    Identifier("a"),
+                    AssignExpr(
+                        Identifier("b"),
+                        FloatLiteral(1.0),
+                    )
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_010():
-    input = """
-float foo() {
-    return 1;
-}
-
+    source = """
 void main() {
-    foo();
+    1 || 2 || 3;
+    a = 2 || 3;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                BinaryOp(
+                    BinaryOp(IntLiteral(1), "||", IntLiteral(2)),
+                    "||",
+                    IntLiteral(3)
+                )
+            ),
+            ExprStmt(
+                AssignExpr( Identifier("a"), BinaryOp( IntLiteral(2), "||", IntLiteral(3) ) )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "FloatType(), " \
-            "foo, " \
-            "[], " \
-            "BlockStmt([ReturnStmt(return IntLiteral(1))])" \
-        "), " \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FuncCall(" \
-                "foo, " \
-                "[]" \
-            "))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-# Test listerals
 def test_011():
-    input = """
+    source = """
 void main() {
-    36;
+    1 && 2 && 3;
+    1 || 2 && 3;
 }
 """
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(IntLiteral(36))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                BinaryOp(
+                    BinaryOp(IntLiteral(1), "&&", IntLiteral(2)),
+                    "&&",
+                    IntLiteral(3)
+                )
+            ),
+            ExprStmt(
+                BinaryOp( IntLiteral(1), "||", BinaryOp( IntLiteral(2), "&&", IntLiteral(3) ) )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_012():
-    input = """
+    source = """
 void main() {
-    -36;
+    1 == 2 != 3;
+    1 && 2 == 3;
 }
 """
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(-IntLiteral(36)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                BinaryOp(
+                    BinaryOp(IntLiteral(1), "==", IntLiteral(2)),
+                    "!=",
+                    IntLiteral(3)
+                )
+            ),
+            ExprStmt(
+                BinaryOp(
+                    IntLiteral(1),
+                    "&&",
+                    BinaryOp(IntLiteral(2), "==", IntLiteral(3))
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_013():
-    input = """
+    source = """
 void main() {
-    3           6;
+    1 > 2 >= 3 < 4 <= 5;
+    1 == 2 > 3;
 }
 """
-
-    expect = "AST Generation Error: Error on line 3 col 16: 6"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                BinaryOp(
+                    BinaryOp(
+                        BinaryOp(
+                            BinaryOp(IntLiteral(1), ">", IntLiteral(2)),
+                            ">=",
+                            IntLiteral(3)
+                        ),
+                        "<",
+                        IntLiteral(4)
+                    ),
+                    "<=",
+                    IntLiteral(5)
+                )
+            ),
+            ExprStmt(
+                BinaryOp(
+                    IntLiteral(1),
+                    "==",
+                    BinaryOp(IntLiteral(2), ">", IntLiteral(3))
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_014():
-    input = """
+    source = """
 void main() {
-    -   36;
+    1 + 2 - 3;
+    1 > 2 + 3;
 }
 """
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(-IntLiteral(36)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                BinaryOp(
+                    BinaryOp(IntLiteral(1), "+", IntLiteral(2)),
+                    "-",
+                    IntLiteral(3)
+                )
+            ),
+            ExprStmt(
+                BinaryOp(
+                    IntLiteral(1),
+                    ">",
+                    BinaryOp(IntLiteral(2), "+", IntLiteral(3))
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_015():
-    input = """
+    source = """
 void main() {
-    -
-            36;
+    1 * 2 / 3 % 4;
+    1 + 2 % 3;
 }
 """
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(-IntLiteral(36)))])" \
-        ")" \
-    "])"
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                BinaryOp(
+                    BinaryOp(
+                        BinaryOp(IntLiteral(1), "*", IntLiteral(2)),
+                        "/",
+                        IntLiteral(3)
+                    ),
+                    "%",
+                    IntLiteral(4)
+                )
+            ),
+            ExprStmt(
+                BinaryOp(
+                    IntLiteral(1),
+                    "+",
+                    BinaryOp(IntLiteral(2), "%", IntLiteral(3))
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    assert str(ASTGenerator(input).generate()) == expect
 
 def test_016():
-    input = """
+    source = """
 void main() {
-    ++3; // invalid in C
+    a;
+    (a + 2) * 3;
 }
 """
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(++IntLiteral(3)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+               Identifier('a')
+            ),
+            ExprStmt(
+                BinaryOp( BinaryOp( Identifier('a'), "+", IntLiteral(2)), '*', IntLiteral(3))
+            ),
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
 def test_017():
-    input = """
-void main() {
-    --3; // invalid in C
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(--IntLiteral(3)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_018():
-    input = """
-void main() {
-    +3;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(+IntLiteral(3)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_019():
-    input = """
-void main() {
-    -3;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(-IntLiteral(3)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_020():
-    input = """
-void main() {
-    !3; // invalid in C
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(!IntLiteral(3)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_021():
-    input = """
-void main() {
-    36++; // invalid in C
-}
-"""
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PostfixOp(IntLiteral(36)++))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_022():
-    input = """
-void main() {
-    36  ++; // invalid in C
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PostfixOp(IntLiteral(36)++))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_023():
-    input = """
-void main() {
-    36
-            ++; // invalid in C
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PostfixOp(IntLiteral(36)++))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_024():
-    input = """
-void main() {
-    36--; // invalid in C
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PostfixOp(IntLiteral(36)--))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_025():
-    input = """
-    void main() {
-        036;
-    }
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(IntLiteral(36))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_026():
-    input = """
-    void main() {
-        00000000000003;
-    }
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(IntLiteral(3))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_027():
-    input = """
-void main() {
-    3.6;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3.6))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_028():
-    input = """
-void main() {
-    03.6;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3.6))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_029():
-    input = """
-void main() {
-    3.6e24;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3.6e+24))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_030():
-    input = """
-void main() {
-    3.6e+24;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3.6e+24))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_031():
-    input =  """
-void main() {
-    3.6e-24;
-}
-"""
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3.6e-24))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_031():
-    input = """
-void main() {
-    // AnTruong HCMUT
-    .36;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(0.36))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_032():
-    input = """
-void main() {
-    -.36;
-}
-"""
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(PrefixOp(-FloatLiteral(0.36)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_033():
-    input = """
-void main() {
-    36.;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(36.0))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_034():
-    input = """
-void main() {
-    .36e36;
-}
-"""
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3.6e+35))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_035():
-    input = """
-void main() {
-    .36+36;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "ExprStmt(BinaryOp(FloatLiteral(0.36), +, IntLiteral(36)))" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_036():
-    input = """
-void main() {
-    .36e-36;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3.6e-37))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_037():
-    input = """
-void main() {
-    .;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: ."
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_038():
-    input = """
-void main() {
-    3.e6;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(3000000.0))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_039():
-    input = """
-void main() {
-    .3e6;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FloatLiteral(300000.0))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_040():
-    input = """
-void main() {
-    .e36;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: ."
-    
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_041():
-    input = """
-void main() {
-    .e-36;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: ."
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_042():
-    input = """
-void main() {
-    3.e;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 6: e"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_043():
-    input = """
-void main() {
-    3.6e*3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 7: e"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_044():
-    input = """
-void main() {
-    3.6ee3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 7: ee3"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_045():
-    input = """
-void main() {
-    "Hello, World!";
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(StringLiteral('Hello, World!'))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_046():
-    input = """
-void main() {
-    "Hello, World! \\n\\r\\n An Truong 2004";
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(StringLiteral('Hello, World! \\\\n\\\\r\\\\n An Truong 2004'))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_047():
-    input = """
-void main() {
-    "Hello,
-        World!"
-}
-"""
-
-    expect = "AST Generation Error: Unclosed String: Hello,"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_048():
-    input = """
-void main() {
-    ++++    3;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "ExprStmt(PrefixOp(++PrefixOp(++IntLiteral(3))))" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_049():
-    input = """
-void main() {
-    (++(++(+
-                a)));
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "ExprStmt(" \
-                    "PrefixOp(" \
-                        "++PrefixOp(" \
-                            "++PrefixOp(" \
-                                "+Identifier(a)" \
-                            ")" \
-                        ")" \
-                    ")" \
-                ")" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_050():
-    input = """
-void main() {
-    !!+!!-!!-3;
-}
-"""
-
-    expect = "Program" \
-    "([" \
-        "FuncDecl" \
-        "(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt" \
-            "([" \
-                "ExprStmt" \
-                "(" \
-                    "PrefixOp" \
-                    "(" \
-                        "!PrefixOp" \
-                        "(" \
-                            "!PrefixOp" \
-                            "(" \
-                                "+PrefixOp" \
-                                "(" \
-                                    "!PrefixOp" \
-                                    "(" \
-                                        "!PrefixOp" \
-                                        "(" \
-                                            "-PrefixOp" \
-                                            "(" \
-                                                "!PrefixOp" \
-                                                "(" \
-                                                    "!PrefixOp" \
-                                                    "(" \
-                                                        "-IntLiteral(3)" \
-                                                    ")" \
-                                                ")" \
-                                            ")" \
-                                        ")" \
-                                    ")" \
-                                ")" \
-                            ")" \
-                        ")" \
-                    ")" \
-                ")" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_051():
-    input = """
-void main() {
-    *+3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: *"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_052():
-    input = """
-void main() {
-    36      ++--;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "ExprStmt(PostfixOp(PostfixOp(IntLiteral(36)++)--))" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_053():
-    input = """
-void main() {
-    36!++;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 6: !"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-
-def test_054():
-    input = """    
-void main() {
-    a = 5; // just test
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(AssignExpr(Identifier(a) = IntLiteral(5)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_055():
-    input = """
-void main() {
-    a = (b = 3) + 5;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "[ExprStmt(AssignExpr(" \
-                "Identifier(a) = " \
-                "BinaryOp(" \
-                    "AssignExpr(Identifier(b) = IntLiteral(3)), " \
-                    "+, " \
-                    "IntLiteral(5)" \
-                ")" \
-            ")]" \
-        ")" \
-    "])"
-
-    str(ASTGenerator(input).generate()) == expect
-
-def test_056():
-    input = """
-void main() {
-    a = ;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 8: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_057():
-    input = """
-void main() {
-    invalidExpr = **a;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 18: *"
-
-    assert str(ASTGenerator(input).generate())
-
-def test_058():
-    input = """
-void main() {
-    a.b;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(MemberAccess(Identifier(a).b))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_059():
-    input = """
-void main() {
-    36.ab; // is valid ?????
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 7: ab"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_060():
-    input = """
-void main() {
-    {1,2}.x;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(" \
-                "MemberAccess(StructLiteral({IntLiteral(1), IntLiteral(2)}).x)" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_061():
-    input = """
-void main() {
-    a.;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 6: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_062():
-    input = """
-void main() {
-    .a;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: ."
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_063():
-    input = """
-void main() {
-    .;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: ."
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_064():
-    input = """
-void main() {
-    a.36;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 5: .36"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_065():
-    input = """
-void main() {
-    foo().x;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(" \
-                "MemberAccess(FuncCall(foo, []).x)" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_066():
-    input = """
-void main() {
-    x.foo();
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 9: ("
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_067():
-    input = """
+    source = """
 void main() {
     foo();
+    foo1(a + 2, a = 2);
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+               FuncCall('foo', [])
+            ),
+            ExprStmt(
+                FuncCall('foo1', [BinaryOp( Identifier('a'), "+", IntLiteral(2)), AssignExpr( Identifier('a'), IntLiteral(2))])
+            ),
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(" \
-                "FuncCall(foo, [])" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_068():
-    input = """
+def test_018():
+    source = """
 void main() {
-    fibo(5);
+    a.b.c.d;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                MemberAccess(
+                    MemberAccess(
+                        MemberAccess(Identifier("a"), "b"),
+                        "c"
+                    ),
+                    "d"
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(" \
-                "FuncCall(fibo, [IntLiteral(5)])" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_069():
-    input = """
+def test_019():
+    source = """
 void main() {
-    foo("AnTruong",2.4,12);
+    3 * a.b;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                BinaryOp(IntLiteral(3), '*',  MemberAccess(Identifier("a"), "b"))
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(FuncCall(foo, [StringLiteral('AnTruong'), FloatLiteral(2.4), IntLiteral(12)]))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_070():
-    input = """
+def test_020():
+    source = """
 void main() {
-    foo(;
+    -+!-+! 2;
+    -a.b.c;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                PrefixOp(
+                    "-",
+                    PrefixOp(
+                        "+",
+                        PrefixOp(
+                            "!",
+                            PrefixOp(
+                                "-",
+                                PrefixOp(
+                                    "+",
+                                    PrefixOp(
+                                        "!",
+                                        IntLiteral(2)
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            ExprStmt(
+                PrefixOp( "-",
+                MemberAccess(
+                    MemberAccess( Identifier("a"), "b"),
+                    "c"
+                ))
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 8: ;"
 
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_071():
-    input = """
+def test_021():
+    source = """
 void main() {
-    foo);
+    ++ -- ++ -- ++ ++ 1;
+    -++a;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                PrefixOp(
+                    "++",
+                    PrefixOp(
+                        "--",
+                        PrefixOp(
+                            "++",
+                            PrefixOp(
+                                "--",
+                                PrefixOp(
+                                    "++",
+                                    PrefixOp(
+                                        "++",
+                                        IntLiteral(1)
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            ExprStmt(
+                    PrefixOp('-',PrefixOp( "++", Identifier("a")))
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 7: )"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-
-def test_072():
-    input = """
+def test_022():
+    source = """
 void main() {
-    ();
+    1 ++ ++ -- ++ -- ++;
+    --a++;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                PostfixOp(
+                    "++",
+                    PostfixOp(
+                        "--",
+                        PostfixOp(
+                            "++",
+                            PostfixOp(
+                                "--",
+                                PostfixOp(
+                                    "++",
+                                    PostfixOp(
+                                        "++",
+                                        IntLiteral(1)
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            ExprStmt(
+                    PrefixOp('--',PostfixOp( "++", Identifier("a")))
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 5: )"
 
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_073():
-    input = """
+def test_023():
+    source = """
 void main() {
-    {1,2};
+    string a = 3 + 1;
+    auto b;
+    ID f;
+    int g;
+    float k = foo();
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            VarDecl(
+                StringType(),
+                "a",
+                BinaryOp(IntLiteral(3), "+", IntLiteral(1))
+            ),
+            VarDecl(None, "b", None),
+            VarDecl(StructType("ID"), "f", None),
+            VarDecl(IntType(), "g", None),
+            VarDecl(FloatType(), "k", FuncCall("foo", []))
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(StructLiteral({IntLiteral(1), IntLiteral(2)}))])" \
-        ")" \
-    "])"
-    
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_074():
-    input = """
+def test_024():
+    source = """
 void main() {
-    x.{1,2};
+    break;
+    continue;
+    return ;
+    return foo.a + 2;
+
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            BreakStmt(),
+            ContinueStmt(),
+            ReturnStmt(None),
+            ReturnStmt(
+                BinaryOp(
+                    MemberAccess(Identifier("foo"), "a"),
+                    "+",
+                    IntLiteral(2)
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-
-    expect = "AST Generation Error: Error on line 3 col 6: {"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_075():
-    input = """
-void main() {
-    {,};
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 5: ,"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_076():
-    input = """
-void main() {
-    {1+2,3+4};
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ExprStmt(" \
-                "StructLiteral({" \
-                    "BinaryOp(IntLiteral(1), +, IntLiteral(2)), " \
-                    "BinaryOp(IntLiteral(3), +, IntLiteral(4))" \
-                "})" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_077():
-    input = """
-void main() {
-    {
-        3 + 2;
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([BlockStmt([" \
-                "ExprStmt(BinaryOp(IntLiteral(3), +, IntLiteral(2)))" \
-            "])])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_078():
-    input = """
-void main() {
-    {
-        int a = 3;
-        foo();
-        if (a < 5) foo();
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "BlockStmt(" \
-                "[" \
-                    "VarDecl(IntType(), a = IntLiteral(3)), " \
-                    "ExprStmt(FuncCall(foo, [])), " \
-                    "IfStmt(if BinaryOp(Identifier(a), <, IntLiteral(5)) then ExprStmt(FuncCall(foo, [])))" \
-                "])" \
-            "])" \
-        ")" \
-    "])"
-
-    print(str(ASTGenerator(input).generate()))
-
-    print(expect)
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_079():
-    input = """
-void main() {
-    {
-        int a = 3;
-        {
-            float b = 5.0;
-            float c = a + b;
-            foo(a,b,c);
-            {
-                string s = "Hello, World!";
-            }
-        }
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([BlockStmt([" \
-                "VarDecl(IntType(), a = IntLiteral(3)), " \
-                "BlockStmt([" \
-                    "VarDecl(FloatType(), b = FloatLiteral(5.0)), " \
-                    "VarDecl(FloatType(), c = BinaryOp(Identifier(a), +, Identifier(b))), " \
-                    "ExprStmt(FuncCall(foo, [Identifier(a), Identifier(b), Identifier(c)])), " \
-                    "BlockStmt([" \
-                        "VarDecl(StringType(), s = StringLiteral('Hello, World!'))" \
-                    "])" \
-                "])" \
-            "])])" \
-        ")" \
-    "])"
-
-    print(str(ASTGenerator(input).generate()))
-
-    print(expect)
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_080():
-    input = """
+def test_025():
+    source = """
 void main() {
     {}
+    {continue; break;}
+    {{{return;}}}
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            BlockStmt([]),
+            BlockStmt([
+               ContinueStmt(), BreakStmt()
+            ]),
+            BlockStmt([
+                BlockStmt([
+                    BlockStmt([
+                        ReturnStmt(None)
+                    ])
+                ])
+            ])
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([BlockStmt([])])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_081():
-    input = """
+def test_026():
+    source = """
 void main() {
-    {int a; foo();
+    a = 1;
+    a = b = c;
+    a.b.d = c = e;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(
+                AssignExpr(
+                Identifier("a"),
+                IntLiteral(1))
+            ),
+            ExprStmt(
+                AssignExpr(
+                    Identifier("a"),
+                    AssignExpr(
+                        Identifier("b"),
+                        Identifier("c")
+                    )
+                )
+            ),
+            ExprStmt(
+                AssignExpr(
+                    MemberAccess(
+                        MemberAccess(Identifier("a"), "b"),
+                        "d"
+                    ),
+                    AssignExpr(
+                        Identifier("c"),
+                        Identifier("e")
+                    )
+                )
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 5 col 0: <EOF>"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_082():
-    input = """
+def test_027():
+    source = """
 void main() {
-    int a; foo();}
-}    
-"""
+    if (1 + 2) continue;
 
-    expect = "AST Generation Error: Error on line 4 col 0: }"
+    if (a.b.c) {
+        break;
+        return;
+    }
+    else break;
 
-    assert str(ASTGenerator(input).generate()) == expect
-
-
-def test_083():
-    input = """
-void main() {
-    int a;
-    int b = foo();
+    if (foo()) {} else {}
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            IfStmt(
+                BinaryOp(IntLiteral(1), "+", IntLiteral(2)),
+                ContinueStmt(),
+                None
+            ),
+            IfStmt(
+                MemberAccess(
+                    MemberAccess(Identifier("a"), "b"),
+                    "c"
+                ),
+                BlockStmt([
+                    BreakStmt(),
+                    ReturnStmt(None)
+                ]),
+                BreakStmt()
+            ),
+            IfStmt(
+                FuncCall("foo", []),
+                BlockStmt([]),
+                BlockStmt([])
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "VarDecl(IntType(), a), " \
-                "VarDecl(IntType(), b = FuncCall(foo, []))" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_084():
-    input = """
+def test_028():
+    source = """
 void main() {
-    float a;
-    float b = foo();
+    if (1) 1;
+    else if (2) continue;
+    else {}
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            IfStmt(
+                IntLiteral(1),
+                ExprStmt(IntLiteral(1)),
+                IfStmt(
+                    IntLiteral(2),
+                    ContinueStmt(),
+                    BlockStmt([])
+                ),
+            ),
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "VarDecl(FloatType(), a), " \
-                "VarDecl(FloatType(), b = FuncCall(foo, []))" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_085():
-    input = """
+def test_029():
+    source = """
 void main() {
-    = a;
+    while(a.b) {}
+    while(foo()) return;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            WhileStmt(
+                MemberAccess(Identifier("a"), "b"),
+                BlockStmt([])
+            ),
+            WhileStmt(
+                FuncCall("foo", []),
+                ReturnStmt(None)
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 4: ="
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_086():
-    input = """
+def test_030():
+    source = """
 void main() {
-    string s;
-    string ss = "AnTruong";
+    for (;;) continue;
+    for (a.b=1;a.b;) {}
+    for (auto a = 1; ; ) {return;}
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ForStmt(
+                None,
+                None,
+                None,
+                ContinueStmt()
+            ),
+            ForStmt(
+                 ExprStmt(AssignExpr(
+                    MemberAccess(Identifier("a"), "b"),
+                    IntLiteral(1)
+                ))
+                ,
+                MemberAccess(Identifier("a"), "b"),
+                None,
+                BlockStmt([])
+            ),
+            ForStmt(
+                VarDecl( None, "a", IntLiteral(1)),
+                None,
+                None,
+                BlockStmt([
+                    ReturnStmt(None)
+                ])
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([" \
-                "VarDecl(StringType(), s), " \
-                "VarDecl(StringType(), ss = StringLiteral('AnTruong'))" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_087():
-    input = """
+def test_031():
+    source = """
 void main() {
-    Vector2 v2 = {3,6};
+    for(;;a++) {}
+    for (;;++a) {}
+    for (;;a.b=2) {}
+    for (a=1;;a.b=2) {}
 }
 """
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([VarDecl(StructType(Vector2), v2 = StructLiteral({IntLiteral(3), IntLiteral(6)}))])" \
-        ")" \
-    "])"
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ForStmt(
+                None,
+                None,
+                PostfixOp('++', Identifier("a")),
+                BlockStmt([])
+            ),
+            ForStmt(
+                None,
+                None,
+                PrefixOp('++', Identifier("a")),
+                BlockStmt([])
+            ),
+            ForStmt(
+                None,
+                None,
+                AssignExpr(
+                    MemberAccess(Identifier("a"), "b"),
+                    IntLiteral(2)
+                ),
+                BlockStmt([])
+            ),
+            ForStmt(
+                 ExprStmt(AssignExpr(
+                   Identifier("a"),
+                    IntLiteral(1)
+                )),
+                None,
+                AssignExpr(
+                    MemberAccess(Identifier("a"), "b"),
+                    IntLiteral(2)
+                ),
+                BlockStmt([])
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_088():
-    input = """
+def test_032():
+    source = """
 void main() {
-    int a = ;
+    for (int a;i<2;a.b=2) {}
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ForStmt(
+                VarDecl(IntType(), "a", None),
+                BinaryOp(Identifier("i"), "<", IntLiteral(2)),
+                AssignExpr(
+                    MemberAccess(Identifier("a"), "b"),
+                    IntLiteral(2)
+                ),
+                BlockStmt([])
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 12: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_089():
-    input = """
+def test_033():
+    source = """
 void main() {
-    int = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 8: ="
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_090():
-    input = """
-void main() {
-    int = ;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 8: ="
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_091():
-    input = """
-void main() {
-    int;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 7: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_092():
-    input = """
-void main() {
-    if (a == 1)         a = 2;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([IfStmt(" \
-                "if BinaryOp(Identifier(a), ==, IntLiteral(1)) then ExprStmt(AssignExpr(Identifier(a) = IntLiteral(2)))" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_093():
-    input = """
-void main() {
-    if (a == 1) a = 2; else a = 3;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([IfStmt(" \
-                "if BinaryOp(Identifier(a), ==, IntLiteral(1)) then ExprStmt(AssignExpr(Identifier(a) = IntLiteral(2))), else ExprStmt(AssignExpr(Identifier(a) = IntLiteral(3)))" \
-            ")])" \
-        ")" \
-    "])"
-
-    print(str(ASTGenerator(input).generate())) == expect
-
-    print(expect)
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_094():
-    input = """
-void main() {
-    else a = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: else"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_095():
-    input = """
-void main() {
-    if (a == 1) a = 2; else ;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 28: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_096():
-    input = """
-void main() {
-    if (a == 1) a = 2
-    else a = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 4: else"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_097():
-    input = """
-void main() {
-    if a == 1 a = 2;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 7: a"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_098():
-    input = """
-void main() {
-    if (a == 1);
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 15: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_099():
-    input = """
-void main() {
-    if;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 6: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_100():
-    input = """
-void main() {
-    if (a == 1)
-        if (a == 2)
-            a = 3;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([IfStmt(" \
-                "if BinaryOp(Identifier(a), ==, IntLiteral(1)) then " \
-                    "IfStmt(if BinaryOp(Identifier(a), ==, IntLiteral(2)) then " \
-                        "ExprStmt(AssignExpr(Identifier(a) = IntLiteral(3)))" \
-                    ")" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_101():
-    input = """
-void main() {
-    if (a == 1) else a = 2;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 16: else"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_102():
-    input = """
-void main() {
-    if (a == 1) a = 2 else;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 22: else"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_103():
-    input = """
-void main() {
-    if () a = 1;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 8: )"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_104():
-    input = """
-void main() {
-    if (int a = 3) a = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 8: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_105():
-    input = """
-void main() {
-    int a = (int a = 3);
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 13: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_106():
-    input = """
-void main() {
-    if (a == 1) int foo() {
-        return 1;
+    switch(a) {
+        case 1: b = 2;
+        case 2: c = 3;
+        default: d = 4;
     }
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            SwitchStmt(
+                Identifier("a"),
+                [
+                    CaseStmt(
+                        IntLiteral(1),
+                        [ExprStmt(AssignExpr(Identifier("b"), IntLiteral(2)))]
+                    ),
+                    CaseStmt(
+                        IntLiteral(2),
+                        [ExprStmt(AssignExpr(Identifier("c"), IntLiteral(3)))]
+                    )
+                ],
+                DefaultStmt([
+                    ExprStmt(AssignExpr(Identifier("d"), IntLiteral(4)))
+                ])
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 23: ("
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_107():
-    input = """
+def test_034():
+    source = """
 void main() {
-    if (a == 1) {
-        foo();
-        int b = 3;
+    switch(x) {
+        case 1: d = 4; b = 2; c = 3;
+        case 2: y = 3;
     }
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            SwitchStmt(
+                Identifier("x"),
+                [
+                    CaseStmt(IntLiteral(1), [
+                    ExprStmt(AssignExpr(Identifier("d"), IntLiteral(4))),
+                    ExprStmt(AssignExpr(Identifier("b"), IntLiteral(2))),
+                    ExprStmt(AssignExpr(Identifier("c"), IntLiteral(3)))
+                ]),
+                    CaseStmt(
+                        IntLiteral(2),
+                        [ExprStmt(AssignExpr(Identifier("y"), IntLiteral(3)))]
+                    )
+                ],
+                None
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([IfStmt(" \
-                "if BinaryOp(Identifier(a), ==, IntLiteral(1)) then BlockStmt([" \
-                    "ExprStmt(FuncCall(foo, [])), " \
-                    "VarDecl(IntType(), b = IntLiteral(3))" \
-                "])" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_108():
-    input = """
+def test_035():
+    source = """
 void main() {
-    if (a == 1) a = 1; else {}
+    switch(1) {
+        default: d = 4; b = 2; c = 3;
+    }
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            SwitchStmt(
+                IntLiteral(1),
+                [],
+                DefaultStmt([
+                    ExprStmt(AssignExpr(Identifier("d"), IntLiteral(4))),
+                    ExprStmt(AssignExpr(Identifier("b"), IntLiteral(2))),
+                    ExprStmt(AssignExpr(Identifier("c"), IntLiteral(3)))
+                ])
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([IfStmt(" \
-                "if BinaryOp(Identifier(a), ==, IntLiteral(1)) then ExprStmt(AssignExpr(Identifier(a) = IntLiteral(1))), else BlockStmt([])" \
-            ")])" \
-        ")" \
-    "])"
-
-    print(str(ASTGenerator(input).generate()))
-
-    print(expect)
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_109():
-    input = """
+def test_036():
+    source = """
 void main() {
-    IF (a == 1) a = 1;
+    switch(1) {
+    }
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            SwitchStmt(
+                IntLiteral(1),
+                [],
+                None
+            )
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 18: ="
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_110():
-    input = """
+def test_037():
+    source = """
 void main() {
-    if (a == 1) a = 1 ELSE a = 2;
+    a = 1;
 }
 """
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(AssignExpr(Identifier('a'),IntLiteral(1)))
+        ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 22: ELSE"
 
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_111():
-    input = """
+def test_039():
+    source = """
 void main() {
-    int foo() {
+    a = {1, 2, 3};
+}
+"""
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(AssignExpr(Identifier("a"),StructLiteral([IntLiteral(1), IntLiteral(2), IntLiteral(3)])))
+            ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
+
+
+def test_040():
+    source = """
+void main() {
+    {1, 2}.a.b;
+}
+"""
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(MemberAccess(MemberAccess(StructLiteral([IntLiteral(1), IntLiteral(2)]),'a'),'b'))]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
+
+
+def test_041():
+    source = """
+void main() {
+   
+}
+"""
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+           
+            
+            ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
+
+def test_042():
+    source = """
+void main() {
+    a.b = 2;
+}
+"""
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+            ExprStmt(AssignExpr(MemberAccess(Identifier("a"), "b"),IntLiteral(2)))
+            
+            ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
+
+def test_043():
+    source = """
+void main() {
+    if (1) 
+        if (2) return 2; 
+        else return;
+}
+"""
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+                IfStmt(
+                    IntLiteral(1),
+                    IfStmt(
+                        IntLiteral(2),
+                        ReturnStmt(IntLiteral(2)),
+                        ReturnStmt()
+                    ),
+                    None
+                )
     
-    }
-}
-"""
+            ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)
 
-    expect = "AST Generation Error: Error on line 3 col 11: ("
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_112():
-    input = """
+def test_044():
+    source = """
 void main() {
-    int a = int b;
+    if (1) 
+        if (2) return 2; 
+        else return;
 }
 """
-
-    expect = "AST Generation Error: Error on line 3 col 12: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_113():
-    input = """
-void main() {
-    int a = int foo() {
-        return 1;
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 12: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_114():
-    input = """
-void main() {
-    while (a < 5) a++;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([WhileStmt(while BinaryOp(Identifier(a), <, IntLiteral(5)) do ExprStmt(PostfixOp(Identifier(a)++)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_115():
-    input = """
-void main() {
-    while (a != b) {
-        int c = a;
-        a = b;
-        b = c;
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([WhileStmt(" \
-                "while BinaryOp(Identifier(a), !=, Identifier(b)) do BlockStmt([" \
-                    "VarDecl(IntType(), c = Identifier(a)), " \
-                    "ExprStmt(AssignExpr(Identifier(a) = Identifier(b))), " \
-                    "ExprStmt(AssignExpr(Identifier(b) = Identifier(c)))" \
-                "])" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_116():
-    input = """
-void main() {
-    while () int a = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 11: )"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_117():
-    input = """
-void main() {
-    while (a == 3);
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 18: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-
-def test_118():
-    input = """
-void main() {
-    while (int a = 3) a = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 11: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_119():
-    input = """
-void main() {
-    WHILE (a = 1) b = 2;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 20: ="
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_120():
-    input = """
-void main() {
-    while a == 1 b = 2;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 10: a"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_121():
-    input = """
-void main() {
-    while (a == 1 b = 2;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 18: b"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_122():
-    input = """
-void main() {
-    while;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 9: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_123():
-    input = """
-void main() {
-    for (int i = 0;i < 10;++i)
-        a = a + i;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ForStmt(" \
-                "for VarDecl(IntType(), i = IntLiteral(0)); BinaryOp(Identifier(i), <, IntLiteral(10)); PrefixOp(++Identifier(i)) do ExprStmt(AssignExpr(Identifier(a) = BinaryOp(Identifier(a), +, Identifier(i))))" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_124():
-    input = """
-void main() {
-    for (i = 0;i < 10;i++) {
-        int b = foo();
-        string s = "Hello, World!";
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ForStmt(" \
-                "for " \
-                    "ExprStmt(AssignExpr(Identifier(i) = IntLiteral(0))); " \
-                    "BinaryOp(Identifier(i), <, IntLiteral(10)); " \
-                    "PostfixOp(Identifier(i)++) " \
-                "do BlockStmt([" \
-                    "VarDecl(IntType(), b = FuncCall(foo, [])), " \
-                    "VarDecl(StringType(), s = StringLiteral('Hello, World!'))" \
-                "])" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_125():
-    input = """
-void main() {
-    for (;;) 
-    {
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ForStmt(" \
-                "for None; None; None do BlockStmt([])" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_126():
-    input = """
-void main() {
-    for (int i = 0 i < 10 i++) {}
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 19: i"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_127():
-    input = """
-void main() {
-    for () int a = 1;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 9: )"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_128():
-    input = """
-void main() {
-    for (int i = 0;int i = 0;int i = 0) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 19: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_129():
-    input = """
-void main() {
-    for (foo(); i < 10;++i) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 14: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_130():
-    input = """
-void main() {
-    for (if (a == 0) a = 1;; i < 10;++i) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 9: if"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_131():
-    input = """
-void main() {
-    for (int i = 0; return 36;; ++i) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 20: return"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_132():
-    input = """
-void main() {
-    for (int i = 0;i < 36;foo()) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 31: )"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_133():
-    input = """
-void main() {
-    for (int i = 0;i < 36;return 36;) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 26: return"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_134():
-    input = """
-void main() {
-    for (int i = 0;i < 36;3 + 6) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 28: +"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_135():
-    input = """
-void main() {
-    for (int i = 0;i < 36;++i);
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 30: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_136():
-    input = """
-void main() {
-    for int i = 0;i < 36;++i {}
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 8: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_137():
-    input = """
-void main() {
-    FOR (int i = 0;i < 36;++i) i = 1;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 9: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_138():
-    input = """
-void main() {
-    switch (a) {
-        case 1:
-            print(a);
-            break;
-        case 2:
-            print(a);
-            break;
-        default:
-            break;
-    } 
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([SwitchStmt(" \
-                "switch Identifier(a) cases [" \
-                    "CaseStmt(case IntLiteral(1): [" \
-                        "ExprStmt(FuncCall(print, [Identifier(a)])), " \
-                        "BreakStmt()" \
-                    "]), " \
-                    "CaseStmt(case IntLiteral(2): [" \
-                        "ExprStmt(FuncCall(print, [Identifier(a)])), " \
-                        "BreakStmt()" \
-                    "])" \
-                "], default DefaultStmt(default: [BreakStmt()])" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_139():
-    input = """
-void main() {
-    switch () {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 12: )"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_140():
-    input = """
-void main() {
-    switch (a) int a = 0;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 15: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_141():
-    input = """
-void main() {
-    switch (a) {
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([SwitchStmt(" \
-                "switch Identifier(a) cases []" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_142():
-    input = """
-void main() {
-    switch (int a = 0) {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 12: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_143():
-    input = """
-void main() {
-    switch (1 + 1) {
-        case:
-            foo();
-            break;
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 12: :"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_144():
-    input = """
-void main() {
-    switch (1 + 1) {
-        case break;:
-            foo();
-            break;
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 13: break"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_145():
-    input = """
-void main() {
-    switch (1 + 1) {
-        case 2 foo();
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 15: foo"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_146():
-    input = """
-void main() {
-    switch (2 + 2) {
-        case;
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 12: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_147():
-    input = """
-void main() {
-    switch (a);
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 14: ;"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_148():
-    input = """
-void main() {
-    switch (a) {
-        default int a = 3;:
-            break;
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 16: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_149():
-    input = """
-void main() {
-    switch (a) {
-        default break;
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 16: break"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_150():
-    input = """
-void main() {
-    switch (a) {
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([SwitchStmt(" \
-                "switch Identifier(a) cases []" \
-            ")])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_151():
-    input = """
-void main() {
-    switch (a)
-        case 3:
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 8: case"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_152():
-    input = """
-void main() {
-    switch (a) {
-        default:
-            break;
-        default:
-            break;
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 6 col 8: default"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_153():
-    input = """
-void main() {
-    switch (a) {
-        default 5:
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 4 col 16: 5"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_154():
-    input = """
-void main() {
-    continue;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ContinueStmt()])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_155():
-    input = """
-void main() {
-    continue 3 + 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 13: 3"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_156():
-    input = """
-void main() {
-    continue int a = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 13: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_157():
-    input = """
-void main() {
-    return;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ReturnStmt(return)])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_158():
-    input = """
-void main() {
-    return 1 + 2;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "VoidType(), " \
-            "main, " \
-            "[], " \
-            "BlockStmt([ReturnStmt(return BinaryOp(IntLiteral(1), +, IntLiteral(2)))])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_159():
-    input = """
-void main() {
-    return int a = 3;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 11: int"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_160():
-    input = """
-struct foo() {
-};
-"""
-
-    expect = "AST Generation Error: Error on line 2 col 10: ("
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_161():
-    input = """
-MyStruct foo() {
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "StructType(MyStruct), " \
-            "foo, " \
-            "[], " \
-            "BlockStmt([])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_162():
-    input = """
-int foo(int a = 3) {
-}
-"""
-
-    expect = "AST Generation Error: Error on line 2 col 14: ="
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_163():
-    input = """
-int foo() {
-    int foo1() {
-    }
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 12: ("
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_164():
-    input = """
-int foo() {
-    {
-        {
-        
-        }
-    }
-
-    {
-    }
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "IntType(), " \
-            "foo, " \
-            "[], " \
-            "BlockStmt([BlockStmt([BlockStmt([])]), BlockStmt([])])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_165():
-    input = """
-int foo {
-
-}
-"""
-
-    expect = "AST Generation Error: Error on line 2 col 8: {"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_166():
-    input = """
-struct MyStruct {
-    int a = 3;
-};
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 10: ="
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_167():
-    input = """
-foo() {
-    int a = 3;
-}
-"""
-
-    expect = "Program([" \
-        "FuncDecl(" \
-            "auto, " \
-            "foo, " \
-            "[], " \
-            "BlockStmt([" \
-                "VarDecl(IntType(), a = IntLiteral(3))" \
-            "])" \
-        ")" \
-    "])"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_168():
-    input = """
-struct MyStruct() {
-};
-"""
-
-    expect = "AST Generation Error: Error on line 2 col 15: ("
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_169():
-    input = """
-struct MyStruct {
-    return 1;
-};
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 4: return"
-
-    assert str(ASTGenerator(input).generate()) == expect
-
-def test_170():
-    input = """
-void main() {
-    int a = return 1;
-}
-"""
-
-    expect = "AST Generation Error: Error on line 3 col 12: return"
-
-    assert str(ASTGenerator(input).generate()) == expect
+    expected = Program([
+        FuncDecl(VoidType(), "main", [], BlockStmt([
+                IfStmt(
+                    IntLiteral(1),
+                    IfStmt(
+                        IntLiteral(2),
+                        ReturnStmt(IntLiteral(2)),
+                        ReturnStmt()
+                    ),
+                    None
+                )
+    
+            ]))
+    ])
+    assert str(ASTGenerator(source).generate()) == str(expected)

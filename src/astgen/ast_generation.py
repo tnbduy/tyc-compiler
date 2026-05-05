@@ -31,7 +31,7 @@ class ASTGeneration(TyCVisitor):
 
     # program: (struct_decl | function_decl)* EOF
     def visitProgram(self, ctx:TyCParser.ProgramContext):
-        return Program([structDeclaration.accept(self) for structDeclaration in ctx.struct_decl()] + [functionDeclaration.accept(self) for functionDeclaration in ctx.function_decl()])
+        return Program([decl.accept(self) for decl in ctx.children[:-1]])
 
     # struct_decl: STRUCT_KEYWORD ID LB_SEP member_list? RB_SEP SM_SEP
     def visitStruct_decl(self, ctx:TyCParser.Struct_declContext):
@@ -131,9 +131,16 @@ class ASTGeneration(TyCVisitor):
         return [ctx.expression().accept(self)] + ctx.list_expression().accept(self)
 
 
-    # expression : assign_exp | expression1;
+    # expression : (ID | struct_mem_id) ASSIGN_OP expression | expression1;
     def visitExpression(self, ctx:TyCParser.ExpressionContext):
-        return ctx.getChild(0).accept(self)
+        if ctx.getChildCount() == 1: #expression1
+            return ctx.expression1().accept(self)
+        
+        # (ID | struct_mem_id) ASSIGN_OP expression
+        if ctx.ID():
+            return AssignExpr(Identifier(ctx.ID().getText()),ctx.expression().accept(self))
+        
+        return AssignExpr(ctx.struct_mem_id().accept(self), ctx.expression().accept(self))
 
 
     # expression1 : expression1 LOGIC_OR_OP expression2 | expression2;
@@ -252,12 +259,12 @@ class ASTGeneration(TyCVisitor):
                 return StructLiteral(ctx.list_expression().accept(self) if ctx.list_expression() else [])
 
 
-    # pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) (call_function | expression10) | (call_function | expression10) (INC_OP | DEC_OP);
+    # pre_post_update : (INC_OP | DEC_OP) pre_post_update | pre_post_update (INC_OP | DEC_OP) | (INC_OP | DEC_OP) expression10 | expression10 (INC_OP | DEC_OP);
     def visitPre_post_update(self, ctx:TyCParser.Pre_post_updateContext):
         firstChild = ctx.getChild(0)
         secondChild = ctx.getChild(1)
 
-        if isinstance(firstChild,(TyCParser.Pre_post_updateContext,TyCParser.Expression10Context,TyCParser.Call_functionContext)): #if this is postfix update
+        if isinstance(firstChild,(TyCParser.Pre_post_updateContext,TyCParser.Expression10Context)): #if this is postfix update
             return PostfixOp(INC_OP if ctx.INC_OP() else DEC_OP, firstChild.accept(self))
         else: # prefix update
             return PrefixOp(INC_OP if ctx.INC_OP() else DEC_OP, secondChild.accept(self))
