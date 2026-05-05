@@ -13,6 +13,8 @@ Usage:
     python run.py test-lexer
     python run.py test-parser
     python run.py test-ast
+    python run.py test-checker
+    python run.py test-codegen
     python run.py clean
 
     # On macOS/Linux:
@@ -22,6 +24,8 @@ Usage:
     python3 run.py test-lexer
     python3 run.py test-parser
     python3 run.py test-ast
+    python3 run.py test-checker
+    python3 run.py test-codegen
     python3 run.py clean
 """
 
@@ -192,7 +196,17 @@ class TyCBuilder:
         )
         print(
             self.colors.yellow(
-                "  python3 run.py test-ast    - Run AST generation tests and generate reports"
+                "  python3 run.py test-ast      - Run AST generation tests and generate reports"
+            )
+        )
+        print(
+            self.colors.yellow(
+                "  python3 run.py test-checker - Run semantic checker tests (Assignment 3)"
+            )
+        )
+        print(
+            self.colors.yellow(
+                "  python3 run.py test-codegen - Run code generation tests (Assignment 4)"
             )
         )
         print()
@@ -493,6 +507,112 @@ class TyCBuilder:
         )
         self.clean_cache()
 
+    def test_checker(self):
+        """Run static semantic checker tests (Assignment 3)."""
+        if not self.build_dir.exists():
+            print(
+                self.colors.yellow("Build directory not found. Running build first...")
+            )
+            self.build_grammar()
+
+        print(self.colors.yellow("Running semantic checker tests..."))
+        checker_report_dir = self.report_dir / "checker"
+        if checker_report_dir.exists():
+            shutil.rmtree(checker_report_dir)
+        self.report_dir.mkdir(exist_ok=True)
+
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(self.root_dir)
+
+        self.run_command(
+            [
+                str(self.venv_python3),
+                "-m",
+                "pytest",
+                "tests/test_checker.py",
+                f"--html={checker_report_dir}/index.html",
+                "--timeout=10",
+                "--self-contained-html",
+                "-v",
+            ],
+            check=False,
+        )
+
+        print(
+            self.colors.green(
+                f"Checker tests completed. Reports at {checker_report_dir}/index.html"
+            )
+        )
+        self.clean_cache()
+
+    def compile_runtime(self):
+        """Compile Java runtime files used by code generation tests."""
+        runtime_dir = self.root_dir / "src" / "runtime"
+        io_java = runtime_dir / "io.java"
+        io_class = runtime_dir / "io.class"
+
+        if not io_java.exists():
+            print(self.colors.red("io.java not found in src/runtime/"))
+            sys.exit(1)
+
+        if io_class.exists() and io_class.stat().st_mtime >= io_java.stat().st_mtime:
+            print(self.colors.blue("Runtime files already compiled."))
+            return
+
+        print(self.colors.yellow("Compiling runtime Java files..."))
+        result = self.run_command(
+            ["javac", str(io_java)],
+            cwd=runtime_dir,
+            check=False,
+            capture_output=True,
+        )
+
+        if result.returncode != 0:
+            print(self.colors.red(f"Failed to compile io.java: {result.stderr}"))
+            sys.exit(1)
+
+        print(self.colors.green("Runtime files compiled successfully."))
+
+    def test_codegen(self):
+        """Run code generation tests (Assignment 4)."""
+        if not self.build_dir.exists():
+            print(
+                self.colors.yellow("Build directory not found. Running build first...")
+            )
+            self.build_grammar()
+
+        self.compile_runtime()
+
+        print(self.colors.yellow("Running code generation tests..."))
+        codegen_report_dir = self.report_dir / "codegen"
+        if codegen_report_dir.exists():
+            shutil.rmtree(codegen_report_dir)
+        self.report_dir.mkdir(exist_ok=True)
+
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(self.root_dir)
+
+        self.run_command(
+            [
+                str(self.venv_python3),
+                "-m",
+                "pytest",
+                "tests/test_codegen.py",
+                f"--html={codegen_report_dir}/index.html",
+                "--timeout=10",
+                "--self-contained-html",
+                "-v",
+            ],
+            check=False,
+        )
+
+        print(
+            self.colors.green(
+                f"Code generation tests completed. Reports at {codegen_report_dir}/index.html"
+            )
+        )
+        self.clean_cache()
+
 
 def main():
     """Main entry point."""
@@ -517,6 +637,8 @@ def main():
             "test-lexer",
             "test-parser",
             "test-ast",
+            "test-checker",
+            "test-codegen",
         ],
         help="Command to execute",
     )
@@ -537,6 +659,8 @@ def main():
         "test-lexer": builder.test_lexer,
         "test-parser": builder.test_parser,
         "test-ast": builder.test_ast,
+        "test-checker": builder.test_checker,
+        "test-codegen": builder.test_codegen,
     }
 
     if args.command in commands:

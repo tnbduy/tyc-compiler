@@ -298,6 +298,7 @@ Where:
 - Struct members can be struct types: However, struct members can be of other struct types (using previously declared struct types)
 - Struct names must be unique in the program
 - Struct members can be of primitive types (`int`, `float`, `string`) or other struct types (that are declared before use)
+- The struct currently being defined does not count as already declared for typing its own members (so a member type cannot be that same incomplete struct)
 
 For example:
 ```tyc
@@ -452,7 +453,7 @@ f = 3.14;              // f is already float
 
 **Important Rules:**
 - When using `auto` with initialization, the type is inferred from the initialization expression
-- When using `auto` without initialization, the type is inferred from the first usage of the variable (assignment, expression, function argument, return value, etc.)
+- When using `auto` without initialization, the type is inferred from the **first usage**, subject to the inference contexts in **Rule 2.2** and **Rule 2.2.1** under *Type Inference* (outer types on receivers or parameters do not automatically fix every `auto` inside a nested expression)
 - When using explicit type, initialization is optional
 - If a variable is used in a context where its type cannot be determined, a semantic error occurs
 
@@ -588,7 +589,7 @@ Where `<type>` is one of: `int`, `float`, `string`, or a struct type name
 
 **Type Inference Rules:**
 - When using `auto` with initialization: the type is inferred from the initialization expression
-- When using `auto` without initialization: the type is inferred from the first usage of the variable (assignment, expression, function argument, etc.)
+- When using `auto` without initialization: the type is inferred from the first usage, as detailed in **Rule 2.2** and **Rule 2.2.1** under *Type Inference*
 - When using explicit type with initialization: the type of the initialization expression must match the declared type
 - When using explicit type without initialization: the variable has the explicitly declared type
 
@@ -684,6 +685,8 @@ Where:
 - `<init>` is a variable declaration or assignment (optional)
 - `<condition>` is an expression that evaluates to int (optional, if omitted, treated as always true)
 - `<update>` is an assignment, increment, or decrement (optional)
+
+Lexical scope for `<init>` and `<body>` follows [Scope Rules](#scope-rules).
 
 For example:
 ```tyc
@@ -829,12 +832,20 @@ auto z = x + y;        // z: float (from expression result type)
 
 **2.2 Variable Declaration with `auto` without Initialization:**
 - The type is inferred from the first usage of the variable
-- The variable's type is determined by the context of its first usage:
-  - If first usage is an assignment: type is the type of the right-hand side expression
-  - If first usage is in an expression: type is determined by the expression's type requirements
-  - If first usage is as a function argument: type is determined by the function parameter type
-  - If first usage is as a return value: type is determined by the function return type
-- If the variable is used in a context where its type cannot be determined, a semantic error occurs
+- The variable's type is determined by the **inference context** of that first usage (see **2.2.1**). In short:
+  - If first usage is an **assignment** to an already-typed left-hand side: the type is the type of the right-hand side (the RHS must be checkable under TyC’s rules, including cases where another operand—such as an integer literal—fixes a single unknown `auto`).
+  - If first usage is as a **function argument**: the parameter type is the expected type of the **whole** argument expression. A lone `auto` **identifier** as the argument may be fixed to that parameter type; TyC does **not** use the parameter type to assign types separately to each operand inside a larger argument expression (e.g. two unknown `auto`s in `x + y` passed to `f(...)`).
+  - If first usage is a **return** value: the function’s return type is the expected type of the **whole** returned expression; the same limitation applies to unknown operands inside nested sub-expressions.
+  - If first usage appears only inside expressions where no rule above fixes that `auto`, a semantic error occurs (`TypeCannotBeInferred`; see *TyC Programming Language - Semantic Constraints and Error Types*).
+
+**2.2.1 Inference contexts (what fixes `auto`, what does not)**
+
+TyC uses **local** inference rules, not unconstrained “propagate any outer type into every sub-expression”:
+
+- **Assignment:** `lhs = rhs` — if `lhs` already has a definite type, `rhs` is checked for compatibility with that type. That can fix one `auto` on the RHS when the rest of the expression supplies enough information (e.g. literals, already-typed variables, or a single unknown with a literal anchor as in Rule 2.2 examples).
+- **Explicitly typed initializer:** `T v = expr` — `expr` must have type `T`. The declared type `T` applies to **checking** the full initializer; it does **not** by itself assign types to unrelated `auto` variables that appear only as **operands** inside `expr` (e.g. two unknown `auto`s in `a * b` when neither is fixed elsewhere).
+- **Function call:** Parameter types apply as the expected type of each **argument expression as a whole**. They fix an `auto` **identifier** that is the entire argument (e.g. `printInt(x)`), but they do **not** recursively infer every leaf in a compound argument.
+- **Integer literal anchor:** For arithmetic `+`, `-`, `*`, `/`, if one operand is an undetermined `auto` and the other is an **integer literal**, TyC applies a **deterministic** rule: the unknown operand is taken as `int`. This is not because `int` is the only typing compatible with the operator table (e.g. if that variable were already known to be `float`, `float + int` would still be valid); it is a **tie-break** for an otherwise unconstrained `auto`.
 
 ```tyc
 auto a;                // type unknown initially
@@ -969,6 +980,7 @@ The type of an expression is inferred from its components:
   - If there are no return statements or only `return;` statements, the return type is inferred as `void`
   - All subsequent return statements must return a value of the inferred return type - if a return statement returns a value of a different type, it is a compile-time error (TypeMismatchInStatement)
 - All `return` statements in a function must return a value of the inferred/declared return type (or no value for `void`)
+- Inferred return type is a property of the **whole** function body under the bullets above; static checking may determine it before or while checking individual statements (e.g. multiple internal passes are allowed).
 
 ### Strict Operator Typing
 
@@ -1055,15 +1067,24 @@ float product2 = multiply(2.5, 3.0); // product2: float (explicit type)
 
 ## Scope Rules
 
-There are 2 levels of scope: global and local.
+Names are resolved under **lexical (static) scope**: visibility depends only on the nesting of declarations in the source text, not on the order in which statements run.
+
+There are two broad levels: **global** (functions, structs) and **local** (parameters and variables inside functions).
 
 ### Global Scope
 
-All function names and struct names have global scope. A function name or struct name is visible everywhere in the program. Functions can be invoked from any function, and struct types can be used throughout the program.
+All function names and struct names have global scope: each denotes one function or one struct type for the whole program, and where the static rules permit a use, resolution refers to that global binding. **A use of a function or of a struct as a type must still follow the declared-before-use ordering** in the source text (see the static semantic reference); global scope does not mean forward reference is allowed.
 
 ### Local Scope
 
-All variables declared in a function (including parameters) have local scope. They are visible from the place they are declared to the end of the enclosing block or function. Variables declared in nested blocks shadow variables with the same name in outer scopes.
+Parameters and variables are **local**. Each declaration introduces a binding that is **visible from the declaration through the end of the innermost scope that contains that declaration**. Resolving an identifier searches **from the innermost scope outward** until a binding is found. **The optional initializer of a variable declaration is not in the scope of that variable**; the variable's name is in scope only after the entire declaration.
+
+**Blocks:** A block `{ ... }` introduces a **new inner scope** for the declarations that appear in its declaration-and-statement list. An inner scope may **shadow** a local variable from an outer scope if the same identifier is declared again. (Restrictions on reusing **parameter** names are stated in the static semantic reference.)
+
+**`for` statements:** For `for (<init>; <condition>; <update>) <body>`:
+
+- Declarations in `<init>` are treated like declarations in the **same local scope** as the `for` itself (the innermost enclosing block or function body). They are **not** limited to the loop alone: the name **remains in scope** for the rest of that enclosing block or body **after** the `for`.
+- The loop `<body>` is elaborated in an **inner scope** nested under that enclosing scope. A declaration in `<body>` may therefore shadow a name introduced in `<init>` without being a duplicate declaration in the same scope.
 
 ---
 

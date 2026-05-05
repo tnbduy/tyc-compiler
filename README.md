@@ -110,6 +110,100 @@ The `ASTGeneration` class must:
 
 ---
 
+## Assignment 3 - Static Semantic Analysis
+
+### Required Tasks to Complete
+
+1. **Study Semantic Constraints and Error Types**
+   - Read carefully all semantic rules in `tyc-semantic_constraints_and_errors.md`
+   - Understand the comprehensive error detection requirements
+   - Master the type inference system and scope management rules
+
+2. **Implement the Static Checker**
+   - Implement the class `StaticChecker` in `src/semantics/static_checker.py` (currently a skeleton raising `NotImplementedError`)
+   - Inherit from `ASTVisitor` for traversing AST nodes
+   - Implement comprehensive semantic analysis for all language features
+   - Handle scope management, type inference, type checking, and error detection
+
+3. **Write 100 Static Checker Test Cases**
+   - Implement **100 test cases** in `tests/test_checker.py`
+   - Test all semantic error types and valid programs
+   - Cover edge cases and complex semantic scenarios
+   - Verify correct error messages and program validation  
+   - For test layout, see `oplang-compiler/tests/test_checker.py` and the `Checker` wrapper in `tests/utils.py`
+
+### Semantic Analysis Requirements
+
+📋 **For detailed semantic constraints, see [Semantic Constraints and Errors](tyc-semantic_constraints_and_errors.md)**
+
+The `StaticChecker` class must:
+
+- **Inherit from ASTVisitor**: Use the visitor pattern to traverse AST nodes
+- **Type Inference**: Implement complete type inference system for `auto` variables
+- **Scope Management**: Handle global scope (functions, structs) and local scope (variables, parameters)
+- **Error Detection**: Detect all 8 error types specified in the semantic constraints document
+- **Type Checking**: Verify type compatibility in statements and expressions according to TyC's strict typing rules
+
+### Error Types to Detect
+
+1. **Redeclared** - Variables, functions, structs, or parameters declared multiple times
+2. **UndeclaredIdentifier** - Use of variables or parameters that have not been declared
+3. **UndeclaredFunction** - Use of functions that have not been declared
+4. **UndeclaredStruct** - Use of struct types that have not been declared
+5. **TypeCannotBeInferred** - single AST argument ``ctx`` (e.g. full **`AssignExpr`** for `x = y`; other nodes when failure is not on an assignment — see semantic constraints doc)
+6. **TypeMismatchInStatement** - Type incompatibilities in statements (if, while, for, return, assignment)
+7. **TypeMismatchInExpression** - Type incompatibilities in expressions (operators, function calls, member access)
+8. **MustInLoop** - Break/continue statements outside of loop contexts
+
+### Evaluation Criteria
+
+- **Semantic Analysis**: Correctness and completeness of the `StaticChecker` implementation
+- **Type Inference**: Accurate type inference for all `auto` variable declarations
+- **Error Detection**: Accurate identification of all required error types
+- **Test Coverage**: Quality and comprehensiveness of 100 semantic checker test cases
+
+---
+
+## Assignment 4 - Code Generation
+
+### Required Tasks to Complete
+
+1. **Study code generation components**
+
+   - Read `src/codegen/codegen.py`, `src/codegen/emitter.py`, and helper files in `src/codegen/`
+   - Understand the runtime support in `src/runtime/io.java` and `src/runtime/jasmin.jar`
+   - Understand the output flow: `AST -> .j -> .class -> run on JVM`
+
+2. **Implement code generation**
+
+   - Complete `CodeGenerator` in `src/codegen/codegen.py`
+   - Complete `Emitter` in `src/codegen/emitter.py`
+   - Generate correct Jasmin code for TyC programs
+
+3. **Write test cases for Assignment 4**
+
+   - Implement **100 test cases** in `tests/test_codegen.py`
+   - Cover basic and advanced language constructs
+   - Verify output of generated programs
+
+### Code Generation Requirements
+
+The Assignment 4 implementation must:
+
+- **Traverse AST with ASTVisitor** and emit code for declarations, statements, and expressions
+- **Generate valid Jasmin code** that can be assembled and executed
+- **Support built-in I/O functions** through runtime class `io`
+- **Manage stack, local variables, and labels** correctly during code generation
+
+### Evaluation Criteria
+
+- **Code Generation Implementation**: Correctness and completeness of `CodeGenerator` and `Emitter`
+- **Runtime Execution**: Generated code assembles and runs correctly on JVM
+- **Test Coverage**: Quality and comprehensiveness of code generation test cases
+- **Output Correctness**: Program outputs match expected results in tests
+
+---
+
 ## Project Structure
 
 ```
@@ -119,6 +213,7 @@ The `ASTGeneration` class must:
 ├── README.md             # Project documentation
 ├── requirements.txt      # Python dependencies
 ├── tyc_specification.md  # Language specification
+├── tyc-semantic_constraints_and_errors.md  # Semantic constraints (Assignment 3)
 ├── external/             # External dependencies
 │   └── antlr-4.13.2-complete.jar
 ├── src/                  # Source code
@@ -132,11 +227,28 @@ The `ASTGeneration` class must:
 │       ├── error_listener.py
 │       ├── nodes.py      # AST node class definitions
 │       └── visitor.py    # Base visitor classes
+│   ├── semantics/        # Semantic analysis (Assignment 3)
+│   │   ├── __init__.py
+│   │   ├── static_checker.py   # StaticChecker — student implementation
+│   │   └── static_error.py     # Semantic error exception classes (predefined)
+│   ├── codegen/          # Code generation (Assignment 4)
+│   │   ├── codegen.py    # CodeGenerator — student implementation
+│   │   ├── emitter.py    # Emitter helpers — student implementation
+│   │   ├── frame.py      # Frame management
+│   │   ├── jasmin_code.py
+│   │   ├── io.py
+│   │   ├── utils.py
+│   │   └── error.py
+│   └── runtime/          # Runtime support for Assignment 4
+│       ├── io.java
+│       └── jasmin.jar
 └── tests/                # Test suite
     ├── test_lexer.py     # Lexer tests
     ├── test_parser.py    # Parser tests
     ├── test_ast_gen.py   # AST generation tests
-    └── utils.py          # Testing utilities
+    ├── test_checker.py   # Semantic analysis tests (Assignment 3)
+    ├── test_codegen.py   # Code generation tests (Assignment 4)
+    └── utils.py          # Testing utilities (Tokenizer, Parser, ASTGenerator, Checker, CodeGenerator)
 ```
 
 ## Quick Start
@@ -182,6 +294,8 @@ The `ASTGeneration` class must:
    python3 run.py test-lexer
    python3 run.py test-parser
    python3 run.py test-ast
+   python3 run.py test-checker
+   python3 run.py test-codegen
    ```
 
 ## Available Commands
@@ -192,6 +306,8 @@ The `ASTGeneration` class must:
 - `python3 run.py test-lexer` - Run lexer tests
 - `python3 run.py test-parser` - Run parser tests
 - `python3 run.py test-ast` - Run AST generation tests
+- `python3 run.py test-checker` - Run semantic checker tests (Assignment 3)
+- `python3 run.py test-codegen` - Run code generation tests (Assignment 4)
 - `python3 run.py clean` - Clean build files
 
 ## License
